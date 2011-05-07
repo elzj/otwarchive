@@ -58,6 +58,7 @@ Otwarchive::Application.routes.draw do
   resources :fandoms do
     collection do
       get :unassigned
+      get :search
     end
   end
   resources :tag_wranglings do

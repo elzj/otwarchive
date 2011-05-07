@@ -3,6 +3,13 @@
 <!--/descriptions-->
 
 <!--main content-->
+<%= form_tag '/fandoms/search' do %>
+  <%= label_tag :fandom_string, 'Find your fandom:' %>
+  <%= text_field_tag :fandom_string %>
+  <%= autocomplete_text_field "fandom_string", :no_comma => true %>
+  <%= submit_tag 'Go'%>
+<% end %>
+
 <ul class="fandom index">
 <% for medium in @media %>
   <li id="medium_<%= medium.id %>" class="category <%= cycle :odd, :even %>">

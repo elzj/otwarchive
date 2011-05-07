@@ -32,6 +32,19 @@ class FandomsController < ApplicationController
     @characters = @fandom.characters.canonical.by_name
   end
   
+  def search
+    if params[:fandom_string]
+      fandom = Fandom.find_by_name(params[:fandom_string])
+      if fandom
+        redirect_to tag_works_path(fandom)
+      else
+        redirect_to search_tags_path(:query => {:name => params[:fandom_string], :type => 'Fandom'})
+      end
+    else
+      redirect_to media_path(:error => "Please enter some text to help us find your fandom.")
+    end
+  end
+  
   def unassigned
     join_string = "LEFT JOIN wrangling_assignments 
                   ON (wrangling_assignments.fandom_id = tags.id) 

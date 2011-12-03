@@ -1,0 +1,7 @@
+<h2>Fandoms by media: <%= @medium.name %></h2>
+  
+<ul>
+  <% @fandoms.each do |fandom| %>
+    <li><%= link_to fandom.name, fandom %></li>
+  <% end %>
+</ul>

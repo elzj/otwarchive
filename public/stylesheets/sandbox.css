@@ -99,3 +99,7 @@ drafting: form.simple {background:#ddd; float:none; display:table; margin:0.643e
   box-shadow: none;
   text-decoration: underline;
 }
+
+/* Prototyping for fandoms show page by elz */
+fieldset.fandom.search {margin: 1em 0;}
+fieldset.fandom.search input.text {width: 30em;}

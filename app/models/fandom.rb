@@ -11,7 +11,12 @@ class Fandom < Tag
   has_many :characters, :through => :child_taggings, :source => :common_tag, :conditions => "type = 'Character'"
   has_many :relationships, :through => :child_taggings, :source => :common_tag, :conditions => "type = 'Relationship'"
   has_many :freeforms, :through => :child_taggings, :source => :common_tag, :conditions => "type = 'Freeform'"
-    
+  
+  has_many :fandom_taggings
+  has_many :fandom_tags, :through => :fandom_taggings, :source => :fandom_tagger, :source_type => 'FandomTag'
+  has_many :fandom_media, :through => :fandom_taggings, :source => :fandom_tagger, :source_type => 'FandomMedium'
+  has_many :fandom_genres, :through => :fandom_taggings, :source => :fandom_tagger, :source_type => 'FandomGenre'
+  has_many :fandom_countries, :through => :fandom_taggings, :source => :fandom_tagger, :source_type => 'FandomCountry'
 
   scope :by_media, lambda {|media| where(:media_id => media.id)}
 
@@ -61,5 +66,37 @@ class Fandom < Tag
     else
       self.children << tag unless self.children.include?(tag)
     end   
+  end
+  
+  def country_names
+    self.fandom_countries.order(:name).value_of(:name).join(', ')
+  end
+  
+  def country_names=(names)
+    update_tags(FandomCountry, names)
+  end
+  
+  def genre_names
+    self.fandom_genres.order(:name).value_of(:name).join(', ')
+  end
+  
+  def genre_names=(names)
+    update_tags(FandomGenre, names)
+  end
+  
+  def media_names
+    self.fandom_media.order(:name).value_of(:name).join(', ')
+  end
+  
+  def media_names=(names)
+    update_tags(FandomMedium, names)
+  end
+  
+  def update_tags(klass, names)
+    tags = []
+    names.split(',').compact.map{ |name| name.strip.squish }.each do |name|
+      tags << klass.find_or_create_by_name(name)
+    end
+    self.send("#{klass.to_s.underscore.pluralize}=", tags.compact)
   end
 end

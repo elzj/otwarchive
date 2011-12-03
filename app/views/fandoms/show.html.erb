@@ -1,30 +1,89 @@
-<!--ZONE TAGS, ZONE HOME? Descriptive page name, messages and instructions-->
-<h2 class="heading"><%= @fandom.name %></h2>
-<!--/descriptions-->
-
-<!--subnavigation, sorting and actions-->
-<ul class="navigation actions" role="navigation">
-  <li><%= link_to ts("Works"), tag_works_path(@fandom) %></li>
-  <li><%= link_to ts("Bookmarks"), tag_bookmarks_path(@fandom) %></li>
-</ul>
-<!--subnav-->
-
-<!--main content-->
-<h3 class="heading"><%= ts('Characters and Relationships') %></h3>
-<% unless @characters.blank? %>
-<ul class="characters relationships index group">
-  <% for character in @characters %>
-  <li class="listbox group">
-    <h4 class="heading"><%= link_to character.name, tag_works_path(character) %></h4>
-    <% unless character.relationships.empty? %>
-    <ul class="tags commas">
-      <% for relationship in character.relationships %>
-      <li><%= link_to relationship.name, tag_works_path(relationship) %></li>
-      <% end %>
-    </ul>
+<!--ZONES TAG HOME Descriptive page name, messages and instructions-->
+<div class="tag home profile">
+  <div class="primary header module">
+    <h2 class="heading"><%= @fandom.name %></h2>
+    <div class="icon"></div>
+  </div>
+  
+  <ul>
+    <li>
+      <%= ts('Media:') + " " %>
+      <%= @media.map{ |m| link_to(m.name, m) }.join(', ').html_safe %>
+    </li>
+    <% unless @wiki.language_name.blank? %>
+      <li><%= ts('Language: %{language_name}', :language_name => @wiki.language_name) %></li>
     <% end %>
-  </li>
+    <li><%= link_to ts("%{count} works", :count => @fandom.filtered_works.count), tag_works_path(@fandom) %></li>
+    <li><%= link_to ts("%{count} bookmarks", :count => @fandom.bookmarks.count), tag_bookmarks_path(@fandom) %></li>
+    <% unless @wiki.fanlore_link.blank? %>
+      <li><%= link_to ts("%{fandom} on Fanlore", :fandom => @fandom.name), @wiki.fanlore_link %></li>
+    <% end %>
+  </ul>
+  
+  <div>
+    <%= raw strip_images(sanitize_field(@wiki, :description)) %>
+    <p><%= link_to ts('Edit'), edit_tag_wiki_path(@wiki) %></p>
+  </div>
+  
+  <%= form_tag '' do %>
+    <fieldset>
+      <%= label_tag :query, ts('Search this fandom:') %>
+      <%= text_field_tag :query %>
+      <%= submit_tag 'Go' %>
+    </fieldset>
   <% end %>
-</ul>
-<% end %>
-<!--/content-->
+  <%= form_tag tag_works_path(@fandom) do %>
+    <fieldset>
+      <%= label_tag :language_id, ts('Browse works by language:') %>
+      <%= select_tag :language_id, options_from_collection_for_select(@languages, "short", "name") %>
+      <%= submit_tag 'Go' %>
+    </fieldset>
+  <% end %>
+
+  <!--main content-->
+  <ul class="media fandom index group">
+    <li class="listbox index group">
+      <h3 class="heading"><%= ts('Characters') %></h3>
+      <% unless @characters.blank? %>
+      <ul class="index group">
+        <% for character in @characters %>
+          <li><%= link_to "#{character.name} (#{character.count})", tag_works_path(character) %></li>
+        <% end %>
+      </ul>
+      <p class="navigation actions" role="navigation"><%= link_to ts("All characters..."), "" %></p>
+      <% end %>
+    </li>
+    <li class="listbox index group">
+      <h3 class="heading"><%= ts('Relationships') %></h3>
+      <% unless @relationships.blank? %>
+      <ul class="index group">
+        <% for relationship in @relationships %>
+          <li><%= link_to "#{relationship.name} (#{relationship.count})", tag_works_path(relationship) %></li>
+        <% end %>
+      </ul>
+      <p class="navigation actions" role="navigation"><%= link_to ts("All relationships..."), "" %></p>
+      <% end %>
+    </li>
+    <li class="listbox index group">
+      <h3 class="heading"><%= ts('Authors and Artists') %></h3>
+      <ul class="index group">
+        <% for pseud in @pseuds %>
+          <li><%= link_to pseud.name, {:controller => :works, :user_id => pseud.user, :pseud_id => pseud, :selected_tags => [@fandom.id]} %></li>
+        <% end %>
+      </ul>
+      <p class="navigation actions" role="navigation"><%= link_to ts("All authors and artists..."), "" %></p>
+    </li>
+    <li class="listbox index group">
+      <h3 class="heading"><%= ts('Collections') %></h3>
+      <% unless @collections.blank? %>
+      <ul class="index group">
+        <% for collection in @collections %>
+          <li><%= link_to collection.title, collection_path(collection) %></li>
+        <% end %>
+      </ul>
+      <p class="navigation actions" role="navigation"><%= link_to ts("All collections..."), "" %></p>
+      <% end %>
+    </li>
+  </ul>
+  <!--/content-->
+</div>

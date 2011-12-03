@@ -35,7 +35,13 @@ class FandomsController < ApplicationController
       setflash; flash[:error] = ts("Could not find fandom named %{fandom_name}", :fandom_name => params[:id])
       redirect_to media_path and return
     end
-    @characters = @fandom.characters.canonical.by_name
+    @wiki = @fandom.tag_wiki || @fandom.create_tag_wiki
+    @media = @fandom.medias.by_name
+    @languages = @fandom.languages.order(:short).group('languages.id')
+    @characters = @fandom.characters.canonical.public_top(5)
+    @relationships = @fandom.relationships.canonical.public_top(5)
+    @pseuds = @fandom.pseuds.group('pseuds.id').order('works.created_at DESC').limit(5)
+    @collections = @fandom.approved_collections.order('collections.created_at DESC').limit(5)
   end
   
   def unassigned

@@ -54,7 +54,20 @@ Otwarchive::Application.routes.draw do
     collection do
       get :unassigned
     end
+    resources :people
+    resources :collections
+    resources :characters
+    resources :relationships
+    resources :freeforms
   end
+  resources :characters do
+    resources :relationships
+    resources :people
+  end
+  resources :relationships do
+    resources :people
+  end
+  resources :freeforms
   resources :tag_wranglings do
     member do
       post :wrangle
@@ -63,6 +76,7 @@ Otwarchive::Application.routes.draw do
       get :discuss
     end
   end
+  resources :tag_wikis, :only => [:show, :edit, :update]
   resources :tag_wranglers
   resources :unsorted_tags do
     collection do

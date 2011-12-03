@@ -1,0 +1,11 @@
+<h1><%= ts('Edit info for %{tag_name}', :tag_name => @tag.name) %></h1>
+
+<%= form_for(@wiki) do |f| %>
+  <%= f.label :fanlore_link %>
+  <%= f.text_field :fanlore_link %>
+  
+  <%= f.label :description %>
+  <%= f.text_area :description %>
+  
+  <%= f.submit %>
+<% end %>

@@ -38,9 +38,12 @@ class Tag < ActiveRecord::Base
   belongs_to :fandom
   belongs_to :media
   belongs_to :last_wrangler, :polymorphic => true
+  has_one :tag_wiki
 
   has_many :filter_taggings, :foreign_key => 'filter_id', :dependent => :destroy
   has_many :filtered_works, :through => :filter_taggings, :source => :filterable, :source_type => 'Work'
+  has_many :pseuds, :through => :filtered_works
+  has_many :languages, :through => :filtered_works
   has_one :filter_count, :foreign_key => 'filter_id'
   has_many :direct_filter_taggings,
               :class_name => "FilterTagging",

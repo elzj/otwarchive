@@ -75,6 +75,8 @@ gem 'newrelic_rpm'
 # for generating graphs
 gem "google_visualr", ">= 2.1"
 
+gem 'paper_trail'
+
 group :test do
   gem 'rspec-rails', '>=2.5.0'
   gem 'pickle'

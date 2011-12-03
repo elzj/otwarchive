@@ -5,44 +5,73 @@
     <div class="icon"></div>
   </div>
   
-  <ul>
-    <li>
-      <%= ts('Media:') + " " %>
-      <%= @media.map{ |m| link_to(m.name, m) }.join(', ').html_safe %>
-    </li>
-    <% unless @wiki.language_name.blank? %>
-      <li><%= ts('Language: %{language_name}', :language_name => @wiki.language_name) %></li>
-    <% end %>
-    <li><%= link_to ts("%{count} works", :count => @fandom.filtered_works.count), tag_works_path(@fandom) %></li>
-    <li><%= link_to ts("%{count} bookmarks", :count => @fandom.bookmarks.count), tag_bookmarks_path(@fandom) %></li>
-    <% unless @wiki.fanlore_link.blank? %>
-      <li><%= link_to ts("%{fandom} on Fanlore", :fandom => @fandom.name), @wiki.fanlore_link %></li>
+  <ul class="navigation actions" role="menu">
+    <li><%= link_to ts('Works'), tag_works_path(@fandom) %></li>
+    <li><%= link_to ts('Bookmarks'), tag_bookmarks_path(@fandom) %></li>  
+    <% if current_user.respond_to?(:is_wrangler?) && current_user.is_wrangler? %>  
+      <li><%= link_to ts('Wrangle'), edit_tag_path(@fandom) %></li>
+      <li><%= link_to ts('Edit Info'), edit_fandom_path(@fandom) %></li>
+      <li><%= link_to ts('Edit Description'), edit_tag_wiki_path(@wiki) %></li>
     <% end %>
   </ul>
   
-  <div>
-    <%= raw strip_images(sanitize_field(@wiki, :description)) %>
-    <p><%= link_to ts('Edit'), edit_tag_wiki_path(@wiki) %></p>
-  </div>
+  <h3><%= link_to ts('Fandom info &raquo;').html_safe, '', :onclick => "$j('.meta').toggleClass('hidden'); return false;" %></h3>
   
-  <%= form_tag '' do %>
-    <fieldset>
-      <%= label_tag :query, ts('Search this fandom:') %>
-      <%= text_field_tag :query %>
+  <dl class="fandom meta group hidden">
+    <% @fandom_tag_types.each do |tag_type| %>
+      <dt>
+        <%= tag_type.constantize.display_name %>
+      </dt>
+      <dd>
+        <% unless @fandom_tags[tag_type].blank? %>
+          <ul class="commas">
+            <% @fandom_tags[tag_type].each do |tag| %>
+              <li>
+                <%= link_to tag.name, tag %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </dd>
+    <% end %>
+    <% unless @wiki.language_name.blank? %>
+      <dt><%= ts('Language') %></dt>
+      <dd><%= @wiki.language_name %></dd>
+    <% end %>
+    <dt><%= ts('Fanworks') %></dt>
+    <dd>
+      <ul class="commas">
+        <li><%= link_to ts("%{count} works", :count => @fandom.filtered_works.count), tag_works_path(@fandom) %></li>
+        <li><%= link_to ts("%{count} bookmarks", :count => @fandom.bookmarks.count), tag_bookmarks_path(@fandom) %></li>
+      </ul>
+    </dd>
+    <dt><%= ts('Description') %></dt>
+    <dd><%= raw strip_images(sanitize_field(@wiki, :description)) %></dd>
+    <dt><%= ts('More Info') %></dt>
+    <dd>
+    <% if @wiki.fanlore_link.blank? %>
+      <%= link_to ts("Find %{fandom} on Fanlore", :fandom => @fandom.name), "http://fanlore.org/wiki/Category:Fandoms_by_Source_Text" %>
+    <% else %>
+      <%= link_to ts("%{fandom} on Fanlore", :fandom => @fandom.name), @wiki.fanlore_link %></dd>
+    <% end %>
+    </dd>
+  </dl>
+  
+  <%= form_tag search_works_path, :class => 'simple search' do %>
+    <fieldset class="fandom search">
+      <p>
+      <%= label_tag 'query[text]', ts('Search this fandom:') %>
+      <%= text_field_tag 'query[text]', '' %>
+      <%= select_tag "query[language]", "<option></option>".html_safe + options_from_collection_for_select(@languages, 'name', 'name') %>
+      <%= hidden_field_tag 'query[tag]', "'#{@fandom.name}'" %>
       <%= submit_tag 'Go' %>
-    </fieldset>
-  <% end %>
-  <%= form_tag tag_works_path(@fandom) do %>
-    <fieldset>
-      <%= label_tag :language_id, ts('Browse works by language:') %>
-      <%= select_tag :language_id, options_from_collection_for_select(@languages, "short", "name") %>
-      <%= submit_tag 'Go' %>
+      </p>
     </fieldset>
   <% end %>
 
   <!--main content-->
   <ul class="media fandom index group">
-    <li class="listbox index group">
+    <li class="listbox index group odd">
       <h3 class="heading"><%= ts('Characters') %></h3>
       <% unless @characters.blank? %>
       <ul class="index group">
@@ -53,7 +82,7 @@
       <p class="navigation actions" role="navigation"><%= link_to ts("All characters..."), "" %></p>
       <% end %>
     </li>
-    <li class="listbox index group">
+    <li class="listbox index group even">
       <h3 class="heading"><%= ts('Relationships') %></h3>
       <% unless @relationships.blank? %>
       <ul class="index group">
@@ -64,16 +93,18 @@
       <p class="navigation actions" role="navigation"><%= link_to ts("All relationships..."), "" %></p>
       <% end %>
     </li>
-    <li class="listbox index group">
+    <li class="listbox index group odd">
       <h3 class="heading"><%= ts('Authors and Artists') %></h3>
       <ul class="index group">
         <% for pseud in @pseuds %>
-          <li><%= link_to pseud.name, {:controller => :works, :user_id => pseud.user, :pseud_id => pseud, :selected_tags => [@fandom.id]} %></li>
+          <li>
+            <%= link_to pseud.name, {:controller => :works, :user_id => pseud.user, :pseud_id => pseud, :selected_tags => [@fandom.id]} %>
+          </li>
         <% end %>
       </ul>
       <p class="navigation actions" role="navigation"><%= link_to ts("All authors and artists..."), "" %></p>
     </li>
-    <li class="listbox index group">
+    <li class="listbox index group even">
       <h3 class="heading"><%= ts('Collections') %></h3>
       <% unless @collections.blank? %>
       <ul class="index group">

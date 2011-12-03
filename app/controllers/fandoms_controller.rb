@@ -37,12 +37,24 @@ class FandomsController < ApplicationController
     end
 
     @wiki = @fandom.tag_wiki || @fandom.create_tag_wiki
+    @fandom_tag_types = FandomTag::VALID_TYPES
+    @fandom_tags = @fandom.fandom_tags.order(:name).group_by{ |tag| tag.type.to_s }
     @media = @fandom.medias.by_name
     @languages = @fandom.languages.order(:short).group('languages.id')
     @characters = @fandom.characters.canonical.public_top(5)
     @relationships = @fandom.relationships.canonical.public_top(5)
     @pseuds = @fandom.pseuds.group('pseuds.id').order('works.created_at DESC').limit(5)
     @collections = @fandom.approved_collections.order('collections.created_at DESC').limit(5)
+  end
+  
+  def edit
+    @fandom = Fandom.find_by_name(params[:id])
+  end
+  
+  def update
+    @fandom = Fandom.find_by_name(params[:id])
+    @fandom.attributes = params[:fandom]
+    redirect_to @fandom
   end
   
   def unassigned

@@ -76,6 +76,9 @@ Otwarchive::Application.routes.draw do
       get :discuss
     end
   end
+  resources :fandom_countries, :only => [:index, :show]
+  resources :fandom_media, :only => [:index, :show]
+  resources :fandom_genres, :only => [:index, :show]
   resources :tag_wikis, :only => [:show, :edit, :update]
   resources :tag_wranglers
   resources :unsorted_tags do

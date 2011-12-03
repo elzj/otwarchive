@@ -1,0 +1,7 @@
+<h2>Find fandoms by country</h2>
+  
+<ul>
+  <% @countries.each do |country| %>
+    <li><%= link_to country.name, country %></li>
+  <% end %>
+</ul>

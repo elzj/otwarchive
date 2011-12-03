@@ -1,0 +1,14 @@
+<%= form_for(@fandom) do |f| %>
+  <dl>
+    <dt><%= f.label :country_names, ts('Country') %></dt>
+    <dd><%= f.text_field :country_names %></dd>
+    
+    <dt><%= f.label :genre_names, ts('Genre') %></dt>
+    <dd><%= f.text_field :genre_names %></dd>
+
+    <dt><%= f.label :media_names, ts('Media') %></dt>
+    <dd><%= f.text_field :media_names %></dd>
+  </dl>
+  
+  <%= f.submit %>
+<% end %>

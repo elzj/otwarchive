@@ -103,3 +103,5 @@ drafting: form.simple {background:#ddd; float:none; display:table; margin:0.643e
 /* Prototyping for fandoms show page by elz */
 fieldset.fandom.search {margin: 1em 0;}
 fieldset.fandom.search input.text {width: 30em;}
+.fandom_media-index .fandoms.inline p {font-size: 1em; line-height: 1.4em; margin: 1em 2em 2em .5em}
+.fandom_media-index .fandoms.inline a {border-bottom: none; text-decoration: underline}

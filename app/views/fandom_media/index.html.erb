@@ -3,43 +3,40 @@
 <!--/descriptions-->
 
 <!--main content-->
-<h3>Find Your Fandom</h3>
-<%= form_tag '' do %>
-  <%= text_field_tag :query %>
-  <%= submit_tag ts('Search') %>
+<%= form_tag '', :class => 'simple search' do %>
+  <fieldset class="fandom search">
+    <p>
+    <%= label_tag :query, ts('Find your fandom:') %>
+    <%= text_field_tag :query %>
+    <%= submit_tag ts('Search') %>
+    </p>
+  </fieldset>
 <% end %>
 
-<h3>All-Time Top Fandoms:</h3>
-<ul class="tags commas">
-  <% @fandoms_all_time.each do |fandom| %>
-    <li><%= link_to fandom.name, fandom_path(fandom) %></li>
-  <% end %>
-</ul>
+<div class="fandoms inline">
+  <p>
+    <strong>All-Time Top Fandoms:</strong>
+    <%= @fandoms_all_time.map{|f| link_to(f.name, fandom_path(f))}.join(", ").html_safe %>
+  </p>
 
-<h3>Currently Active Fandoms:</h3>
-<ul class="tags commas">
-  <% @fandoms_active.each do |fandom| %>
-    <li><%= link_to fandom.name, fandom_path(fandom) %></li>
-  <% end %>
-</ul>
+  <p>
+    <strong>Currently Active Fandoms:</strong>
+    <%= @fandoms_active.map{|f| link_to(f.name, fandom_path(f))}.join(", ").html_safe %>
+  </p>
 
-<h3>New Fandoms:</h3>
-<ul class="tags commas">
-  <% @fandoms_new.each do |fandom| %>
-    <li><%= link_to fandom.name, fandom_path(fandom) %></li>
-  <% end %>
-</ul>
+  <p>
+    <strong>New Fandoms:</strong>
+    <%= @fandoms_new.map{|f| link_to(f.name, fandom_path(f))}.join(", ").html_safe %>
+  </p>
 
-<h3>Staff Spotlight:</h3>
-<ul class="tags commas">
-  <% @fandoms_spotlight.each do |fandom| %>
-    <li><%= link_to fandom.name, fandom_path(fandom) %></li>
-  <% end %>
-</ul>
-
-<ul class="media fandom index group">
+  <p>
+    <strong>Staff Spotlight:</strong>
+    <%= @fandoms_spotlight.map{|f| link_to(f.name, fandom_path(f))}.join(", ").html_safe %>
+  </p>
+</div>
+<ul class="index group">
 <% for medium in @media %>
-  <li id="medium_<%= medium.id %>" class="medium listbox group <%= cycle :odd, :even %>">
+  <li id="medium_<%= medium.id %>" class="medium listbox group">
     <h3 class="heading"><%= link_to medium.name, medium %></h3>
 
     <ol class="index group">

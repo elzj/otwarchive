@@ -1,7 +1,52 @@
-<h2>Find fandoms by media</h2>
-  
-<ul>
-  <% @media.each do |medium| %>
-    <li><%= link_to medium.name, medium %></li>
-  <% end %>
+<!--SEARCHBROWSE descriptive page name and system messages, descriptions, and instructions.-->
+<h2 class="heading"><%= ts('Fandoms') %></h2>
+<!--/descriptions-->
+
+<!--main content-->
+<%= form_tag '', :class => 'simple search' do %>
+  <fieldset class="fandom search">
+    <p>
+    <%= label_tag :query, ts('Find your fandom:') %>
+    <%= text_field_tag :query %>
+    <%= submit_tag ts('Search') %>
+    </p>
+  </fieldset>
+<% end %>
+
+<div class="fandoms inline">
+  <p>
+    <strong>All-Time Top Fandoms:</strong>
+    <%= @fandoms_all_time.map{|f| link_to(f.name, fandom_path(f))}.join(", ").html_safe %>
+  </p>
+
+  <p>
+    <strong>Currently Active Fandoms:</strong>
+    <%= @fandoms_active.map{|f| link_to(f.name, fandom_path(f))}.join(", ").html_safe %>
+  </p>
+
+  <p>
+    <strong>New Fandoms:</strong>
+    <%= @fandoms_new.map{|f| link_to(f.name, fandom_path(f))}.join(", ").html_safe %>
+  </p>
+
+  <p>
+    <strong>Staff Spotlight:</strong>
+    <%= @fandoms_spotlight.map{|f| link_to(f.name, fandom_path(f))}.join(", ").html_safe %>
+  </p>
+</div>
+<ul class="index group">
+<% for medium in @media %>
+  <li id="medium_<%= medium.id %>" class="medium listbox group">
+    <h3 class="heading"><%= link_to medium.name, medium %></h3>
+
+    <ol class="index group">
+    <% for subcategory in medium.children.order(:name) %>
+      <li>
+        <%= link_to subcategory.name, subcategory %>
+      </li>
+    <% end %>
+    </ol>
+  </li>
+<% end %>
 </ul>
+<!--/content-->

@@ -35,7 +35,6 @@ class FandomsController < ApplicationController
       setflash; flash[:error] = ts("Could not find fandom named %{fandom_name}", :fandom_name => params[:id])
       redirect_to media_path and return
     end
-
     @wiki = @fandom.tag_wiki || @fandom.create_tag_wiki
     @fandom_tag_types = FandomTag::VALID_TYPES
     @fandom_tags = @fandom.fandom_tags.order(:name).group_by{ |tag| tag.type.to_s }

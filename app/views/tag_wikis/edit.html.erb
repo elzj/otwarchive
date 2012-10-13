@@ -7,5 +7,10 @@
   <%= f.label :description %>
   <%= f.text_area :description %>
   
+  <% if can_wrangle? %>
+    <%= f.label :locked, ts("Lock this page so that only wranglers and admins can edit it") %>
+    <%= f.check_box :locked %>
+  <% end %>
+  
   <%= f.submit %>
 <% end %>

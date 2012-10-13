@@ -1,7 +1,55 @@
-<h2>Find fandoms by media</h2>
-  
-<ul>
-  <% @media.each do |medium| %>
-    <li><%= link_to medium.name, medium %></li>
+<!--SEARCHBROWSE descriptive page name and system messages, descriptions, and instructions.-->
+<h2 class="heading"><%= ts('Fandoms') %></h2>
+<!--/descriptions-->
+
+<!--main content-->
+<h3>Find Your Fandom</h3>
+<%= form_tag '' do %>
+  <%= text_field_tag :query %>
+  <%= submit_tag ts('Search') %>
+<% end %>
+
+<h3>All-Time Top Fandoms:</h3>
+<ul class="tags commas">
+  <% @fandoms_all_time.each do |fandom| %>
+    <li><%= link_to fandom.name, fandom_path(fandom) %></li>
   <% end %>
 </ul>
+
+<h3>Currently Active Fandoms:</h3>
+<ul class="tags commas">
+  <% @fandoms_active.each do |fandom| %>
+    <li><%= link_to fandom.name, fandom_path(fandom) %></li>
+  <% end %>
+</ul>
+
+<h3>New Fandoms:</h3>
+<ul class="tags commas">
+  <% @fandoms_new.each do |fandom| %>
+    <li><%= link_to fandom.name, fandom_path(fandom) %></li>
+  <% end %>
+</ul>
+
+<h3>Staff Spotlight:</h3>
+<ul class="tags commas">
+  <% @fandoms_spotlight.each do |fandom| %>
+    <li><%= link_to fandom.name, fandom_path(fandom) %></li>
+  <% end %>
+</ul>
+
+<ul class="media fandom index group">
+<% for medium in @media %>
+  <li id="medium_<%= medium.id %>" class="medium listbox group <%= cycle :odd, :even %>">
+    <h3 class="heading"><%= link_to medium.name, medium %></h3>
+
+    <ol class="index group">
+    <% for subcategory in medium.children.order(:name) %>
+      <li>
+        <%= link_to subcategory.name, subcategory %>
+      </li>
+    <% end %>
+    </ol>
+  </li>
+<% end %>
+</ul>
+<!--/content-->

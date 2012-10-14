@@ -103,5 +103,51 @@ drafting: form.simple {background:#ddd; float:none; display:table; margin:0.643e
 /* Prototyping for fandoms show page by elz */
 fieldset.fandom.search {margin: 1em 0;}
 fieldset.fandom.search input.text {width: 30em;}
+.fandom_media-index .fandoms.inline {border-bottom: 1px solid #666}
 .fandom_media-index .fandoms.inline p {font-size: 1em; line-height: 1.4em; margin: 1em 2em 2em .5em}
 .fandom_media-index .fandoms.inline a {border-bottom: none; text-decoration: underline}
+
+.collapse {
+  position: relative;
+  height: 0;
+  overflow: hidden;
+  -webkit-transition: height 0.35s ease;
+     -moz-transition: height 0.35s ease;
+       -o-transition: height 0.35s ease;
+          transition: height 0.35s ease;
+}
+
+.collapse.in {
+  height: auto;
+}
+
+.accordion {
+  margin-bottom: 20px;
+}
+
+.accordion-group {
+  margin-bottom: 2px;
+  border: 1px solid #e5e5e5;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
+.accordion-heading {
+  border-bottom: 0;
+  background-color: #DDD;
+}
+
+.accordion-heading .accordion-toggle {
+  display: block;
+  padding: 8px 15px;
+}
+
+.accordion-toggle {
+  cursor: pointer;
+}
+
+.accordion-inner {
+  padding: 9px 15px;
+  border-top: 1px solid #e5e5e5;
+}

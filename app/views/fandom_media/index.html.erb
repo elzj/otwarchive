@@ -34,19 +34,29 @@
     <%= @fandoms_spotlight.map{|f| link_to(f.name, fandom_path(f))}.join(", ").html_safe %>
   </p>
 </div>
-<ul class="index group">
-<% for medium in @media %>
-  <li id="medium_<%= medium.id %>" class="medium listbox group">
-    <h3 class="heading"><%= link_to medium.name, medium %></h3>
 
-    <ol class="index group">
-    <% for subcategory in medium.children.order(:name) %>
-      <li>
-        <%= link_to subcategory.name, subcategory %>
-      </li>
-    <% end %>
-    </ol>
-  </li>
-<% end %>
-</ul>
+<h3>Browse Media</h3>
+
+<div class="accordion" id="accordion-media">
+  <% @media.each do |medium| %>
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-media" href="#medium-<%= medium.id %>">
+          <%= medium.name %>
+        </a>
+      </div>
+      <div id="medium-<%= medium.id %>" class="accordion-body collapse">
+        <div class="accordion-inner">
+          <ol>
+          <% for subcategory in medium.children.order(:name) %>
+            <li>
+              <%= link_to subcategory.name, subcategory %>
+            </li>
+          <% end %>
+          </ol>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
 <!--/content-->

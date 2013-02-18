@@ -44,6 +44,9 @@ class Work < ActiveRecord::Base
   has_many :challenge_claims, :as => :creation
   accepts_nested_attributes_for :challenge_claims
 
+  has_many :work_type_taggings
+  has_many :work_types, through: :work_type_taggings
+
   has_many :filter_taggings, :as => :filterable, :dependent => :destroy
   has_many :filters, :through => :filter_taggings
   has_many :direct_filter_taggings, :class_name => "FilterTagging", :as => :filterable, :conditions => "inherited = 0"
@@ -667,6 +670,21 @@ class Work < ActiveRecord::Base
   # Works are taggable objects.
   #######################################################################
 
+  validate :must_have_work_type, on: :create
+  def must_have_work_type
+    if work_types.empty?
+      self.errors.add(:base, ts("Must have at least one work type"))
+    end
+  end
+
+  def work_type_ids
+    work_types.value_of(:id)
+  end
+
+  def work_type_ids=(ids)
+    self.work_types = WorkType.where(id: ids)
+  end
+
   def tag_groups
     if self.placeholder_tags
       self.placeholder_tags.values.flatten.group_by { |t| t.type.to_s }
@@ -1147,6 +1165,7 @@ class Work < ActiveRecord::Base
         :relationship_ids, 
         :freeform_ids, 
         :filter_ids,
+        :work_type_ids,
         :tag, 
         :pseud_ids, 
         :collection_ids, 

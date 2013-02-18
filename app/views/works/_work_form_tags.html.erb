@@ -1,9 +1,44 @@
 <fieldset class="work meta">
   <legend><%= ts("Tags") %></legend>
   <h3 class="landmark">Tags</h3>
- <p class="note"><%= ts("Tags are comma separated, %{max} characters per tag.", :max => ArchiveConfig.TAG_MAX) %></p>
+  <p class="note">
+    <%= ts("Tags are comma separated, %{max} characters per tag.", :max => ArchiveConfig.TAG_MAX) %>
+  </p>
 
   <dl>
+    <dt>
+      <label for="work_nonfiction">
+        <%= ts("Is this work fiction or nonfiction?") %>
+      </label>
+    </dt>
+    <dd>
+      <%= radio_button_tag "work[nonfiction][]", 0, !@work.nonfiction?, :id => "work_nonfiction_0" %>
+      <label for="work_nonfiction_0">
+        <%= ts("Fiction/Art") %>
+      </label>
+      <%= radio_button_tag "work[nonfiction][]", 1, @work.nonfiction?, :id => "work_nonfiction_1" %>
+      <label for="work_nonfiction_1">
+        <%= ts("Nonfiction") %>
+      </label> 
+    </dd>
+
+    <dt class="category">
+      <label><%= ts("Work Type") %></label>
+    </dt>
+    <dd class="category">
+      <fieldset>
+        <ul>
+          <% for work_type in WorkType.order(:name) %>
+            <% cycle_class = cycle("odd", "even") %>
+            <li class="<%= cycle_class %>">
+              <%= check_box_tag "work[work_type_ids][]", work_type.id, @work.work_types.include?(work_type), :id => "work_work_type_ids_#{work_type.id}" %>
+              <%= label_tag "work_work_type_ids_#{work_type.id}", work_type.name %>
+            </li>
+          <% end %>
+        </ul>
+      </fieldset>
+    </dd>
+
     <dt class="rating required">
       <label for="work_rating_string"><%= Rating::NAME %>* <%= link_to_help "rating-help" %></label>
     </dt>

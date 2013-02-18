@@ -14,6 +14,9 @@ class WorkSearch < Search
     :comments_count, 
     :pseud_ids,
     :collection_ids,
+    :fiction, 
+    :nonfiction,
+    :work_type_ids,
     :tag,
     :other_tag_names,
     :filter_ids,
@@ -72,6 +75,8 @@ class WorkSearch < Search
           must { term :hidden_by_admin, 'F' }
           must { term :restricted, 'F' } unless search_opts[:show_restricted]
           must { term :complete, 'T' } if %w(1 true).include?(search_opts[:complete].to_s)
+          must { term :nonfiction, 'F' } if work_search.exclude_nonfiction?
+          must { term :nonfiction, 'T' } if work_search.exclude_fiction?
           must { term :expected_number_of_chapters, 1 } if %w(1 true).include?(search_opts[:single_chapter].to_s)
           must { term :in_unrevealed_collection, 'F' } unless work_search.should_include_unrevealed?
           must { term :in_anon_collection, 'F' } unless work_search.should_include_anon?
@@ -79,6 +84,10 @@ class WorkSearch < Search
           
           if search_opts[:pseud_ids].present?
             must { terms :pseud_ids, search_opts[:pseud_ids] }
+          end
+
+          if search_opts[:work_type_ids].present?
+            must { terms :work_type_ids, search_opts[:work_type_ids] }
           end
           
           [:rating_ids, :warning_ids, :category_ids, :fandom_ids, :character_ids, :relationship_ids, :freeform_ids].each do |id_list|
@@ -88,7 +97,7 @@ class WorkSearch < Search
             end
           end
           
-          [:filter_ids, :collection_ids].each do |id_list|
+          [:filter_ids, :collection_ids, :work_type_ids].each do |id_list|
             if search_opts[id_list].present?
               search_opts[id_list].each do |id|
                 must { term id_list, id }
@@ -192,6 +201,14 @@ class WorkSearch < Search
 
   def should_include_drafts?
     self.collected && User.current_user.present? && (User.current_user == self.works_parent)
+  end
+
+  def exclude_nonfiction?
+    options[:fiction].present? && !%w(1 true).include?(options[:nonfiction].to_s)
+  end
+
+  def exclude_fiction?
+    options[:nonfiction].present? && !%w(1 true).include?(options[:fiction].to_s)
   end
   
   # Translate language abbreviations to numerical ids

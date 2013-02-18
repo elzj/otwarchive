@@ -375,6 +375,13 @@ namespace :After do
     end
   end
 
+  desc "Set up work types"
+  task(:work_type_seeds => :environment) do
+    %w(Art Audio Other Text Video).each do |name|
+      WorkType.create(name: name)
+    end
+  end
+
 end # this is the end that you have to put new tasks above
 
 ##################

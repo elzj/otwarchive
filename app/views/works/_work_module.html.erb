@@ -100,6 +100,14 @@
     <dt><%= ts("Hits") %>:</dt>
     <dd><%= work.hits %></dd>
   <% end %>
+  <ul class="commas" style="clear:both; float: right; font-size: .9em; font-weight: italic; color: #900; width: 100%">
+    <li>
+      <%= work.nonfiction? ? ts("Nonfiction") : ts("Fiction") %>
+    </li>
+    <% work.work_types.each do |work_type| %>
+      <li><%= work_type.name %></li>
+    <% end %>
+  </ul>
 <% end %>
 <% #### END CACHE stats #### %>
 

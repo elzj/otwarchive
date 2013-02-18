@@ -56,6 +56,31 @@
       </dd>
     </dl>
   </fieldset>
+
+  <fieldset>
+    <legend>Work Type</legend>
+    <dl>
+      <dt><%= ts("Fiction/Nonfiction") %></dt>
+      <dd>
+        <%= f.check_box :fiction %>
+        <%= f.label :fiction %>
+        <br />
+        <%= f.check_box :nonfiction %>
+        <%= f.label :nonfiction %>
+      </dd>
+      <dt><%= ts("Work Type") %></dt>
+      <dd>
+        <ul>
+          <% WorkType.order(:name).each do |work_type| %>
+            <li>
+              <%= check_box_tag "work_search[work_type_ids][]", work_type.id, @search.work_type_ids.blank? || @search.work_type_ids.include?(work_type.id.to_s), :id => "work_search_work_type_ids_#{work_type.id}" %>
+              <%= label_tag "work_search_work_type_ids_#{work_type.id}", work_type.name %>
+            </li>
+          <% end %>
+        </ul>
+      </dd>
+    </dl>
+  </fieldset>
   
   <fieldset>
     <legend>Work Tags <%= link_to_help "work-search-tags-help" %></legend>

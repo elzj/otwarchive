@@ -14,6 +14,9 @@ class ExternalWork < ActiveRecord::Base
   has_many :filter_taggings, :as => :filterable, :dependent => :destroy
   has_many :filters, :through => :filter_taggings
 
+  has_many :external_work_type_taggings
+  has_many :work_types, through: :external_work_type_taggings
+
   has_many :ratings, :through => :taggings, :source => :tagger, :source_type => 'Rating', :before_remove => :remove_filter_tagging
   has_many :categories, :through => :taggings, :source => :tagger, :source_type => 'Category', :before_remove => :remove_filter_tagging
   has_many :warnings, :through => :taggings, :source => :tagger, :source_type => 'Warning', :before_remove => :remove_filter_tagging

@@ -84,7 +84,7 @@ class WorksController < ApplicationController
 
   def search
     @languages = Language.default_order
-    options = params[:work_search] || {}
+    options = params[:work_search] || {fiction: true, nonfiction: true}
     options.merge!(page: params[:page]) if params[:page].present?
     options[:show_restricted] = current_user.present?
     @search = WorkSearch.new(options)
@@ -103,7 +103,7 @@ class WorksController < ApplicationController
     if params[:work_search].present?
       options = params[:work_search].dup
     else
-      options = {}
+      options = {fiction: true, nonfiction: true}
     end
     if params[:fandom_id] || (@collection.present? && @tag.present?)
       if params[:fandom_id].present?

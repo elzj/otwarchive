@@ -4,6 +4,18 @@
 <div class="wrapper">
 
   <dl class="work meta group" role="complementary">
+    <dt>Work Type:</dt>
+    <dd>
+      <ul class="commas">
+        <li>
+          <%= @work.nonfiction? ? ts("Nonfiction") : ts("Fiction") %>
+        </li>
+        <% @work.work_types.each do |work_type| %>
+          <li><%= work_type.name %></li>
+        <% end %>
+      </ul>
+    </dd>
+
     <% Tag::VISIBLE.each do |type| %>
       <% tags = work.tag_groups[type] %>
         <% unless tags.blank? %>

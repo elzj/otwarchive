@@ -1,7 +1,8 @@
 class Api::V1::WorksController < Api::V1::BaseController
-  respond_to :html, :json
+  respond_to :json
   
   def show
-    respond_with Work.find(params[:id])
+    @work = Work.find(params[:id])
+    respond_with @work
   end
 end

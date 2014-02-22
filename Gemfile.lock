@@ -118,6 +118,9 @@ GEM
     http-cookie (1.0.1)
       domain_name (~> 0.5)
     i18n (0.6.1)
+    jbuilder (2.0.3)
+      activesupport (>= 3.0.0)
+      multi_json (>= 1.2.0)
     journey (1.0.4)
     jquery-rails (3.0.1)
       railties (>= 3.0, < 5.0)
@@ -325,6 +328,7 @@ DEPENDENCIES
   gherkin
   google_visualr (>= 2.1)
   htmlentities
+  jbuilder
   jquery-rails (>= 0.2.6)
   launchy
   mechanize

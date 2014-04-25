@@ -298,18 +298,16 @@ class User < ActiveRecord::Base
 
   # Returns an array (of pseuds) of this user's co-authors
   def coauthors
-     works.collect(&:pseuds).flatten.uniq - pseuds
+    works.collect(&:pseuds).flatten.uniq - pseuds
   end
 
   # Gets the user's most recent unposted work
   def unposted_work
-    return @unposted_work if @unposted_work
-    @unposted_work = unposted_works.first
+    @unposted_work ||= unposted_works.first
   end
 
   def unposted_works
-    return @unposted_works if @unposted_works
-    @unposted_works = works.where(posted: false).order('works.created_at DESC')
+    @unposted_works ||= works.where(posted: false).order('works.created_at DESC')
   end
 
   # removes ALL unposted works

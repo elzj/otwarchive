@@ -33,7 +33,11 @@ gem 'rest-client', :require => 'rest_client'
 gem 'resque', '>=1.14.0'
 gem 'resque_mailer'
 #gem 'daemon-spawn', :require => 'daemon_spawn'
+
 gem 'tire'
+gem 'elasticsearch-model'
+gem 'elasticsearch-rails'
+
 gem 'aws-sdk'
 gem 'css_parser'
 
@@ -74,7 +78,7 @@ gem 'coveralls', require: false
 #Phrase-app
 gem 'phrase'
 
-#  Place the New Relic gem as low in the list as possible, allowing the 
+#  Place the New Relic gem as low in the list as possible, allowing the
 #  frameworks above it to be instrumented when the gem initializes.
 gem 'newrelic_rpm', "3.8.0.218"
 gem 'newrelic-redis'
@@ -90,7 +94,7 @@ group :test do
   gem 'capybara'
   gem 'database_cleaner'
   gem 'cucumber-rails', require: false
-  gem 'gherkin' 
+  gem 'gherkin'
   gem 'launchy'    # So you can do Then show me the page
   # automatically record http requests and save them to make
   # cuke fast

@@ -1,7 +1,9 @@
 class Pseud < ActiveRecord::Base
-  
-  include Tire::Model::Search
-  include Tire::Model::Callbacks
+
+  # include Tire::Model::Search
+  # include Tire::Model::Callbacks
+  include Elasticsearch::Model
+  # include Elasticsearch::Model::Callbacks
   include WorksOwner
 
   attr_protected :description_sanitizer_version
@@ -281,7 +283,7 @@ class Pseud < ActiveRecord::Base
     end
     {:pseuds => valid_pseuds, :ambiguous_pseuds => ambiguous_pseuds, :invalid_pseuds => failures}
   end
-  
+
   ## AUTOCOMPLETE
   # set up autocomplete and override some methods
   include AutocompleteSource
@@ -383,33 +385,52 @@ class Pseud < ActiveRecord::Base
   def clear_icon
     self.icon = nil if delete_icon? && !icon.dirty?
   end
-  
+
   #################################
   ## SEARCH #######################
   #################################
-  
-  mapping do
-    indexes :name, boost: 20
+
+  index_name    "ao3_#{Rails.env}_users"
+  document_type "pseud"
+
+  after_commit lambda { __elasticsearch__.index_document(parent: user_id)  },  on: :create
+  after_commit lambda { __elasticsearch__.update_document(parent: user_id) },  on: :update
+  after_commit lambda { __elasticsearch__.delete_document(parent: user_id) },  on: :destroy
+
+  settings index: { number_of_shards: 5 } do
+    mappings '_parent' => { type: 'user' } do
+      indexes :name, analyzer: 'simple'
+      indexes :name_suggest, type: 'completion', payloads: true
+    end
   end
-  
+
+  # The standard import method doesn't account for parent/child relationships
+  def self.import_with_parents(options={})
+    transform = lambda do |a|
+       {index: {_id: a.id, _parent: a.user_id, data: a.__elasticsearch__.as_indexed_json}}
+    end
+
+    self.import options.merge(transform: transform)
+  end
+
+  def name_suggest
+    {
+      input: [name, user_login].uniq,
+      output: byline,
+      payload: { pseud_id: id }
+    }
+  end
+
+  def as_indexed_json(options={})
+    as_json(
+      root: false,
+      only: [:id, :user_id, :name, :description, :default, :created_at],
+      methods: [:name_suggest]
+    )
+  end
+
   def collection_ids
     collections.value_of(:id)
-  end
-  
-  self.include_root_in_json = false
-  def to_indexed_json
-    to_json(methods: [:user_login, :collection_ids])
-  end
-  
-  def self.search(options={})
-    tire.search(page: options[:page], per_page: ArchiveConfig.ITEMS_PER_PAGE, load: true) do
-      query do
-        boolean do
-          must { string options[:query], default_operator: "AND" } if options[:query].present?
-          must { term :collection_ids, options[:collection_id] } if options[:collection_id].present?
-        end
-      end
-    end
   end
 
 end

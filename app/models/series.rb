@@ -1,4 +1,7 @@
 class Series < ActiveRecord::Base
+
+  include Elasticsearch::Model
+  include Elasticsearch::Model::Callbacks
   include Bookmarkable
 
   has_many :serial_works, :dependent => :destroy
@@ -197,5 +200,22 @@ class Series < ActiveRecord::Base
     else
       Work.in_series(self).visible.collect(&:revised_at).compact.uniq.sort.last
     end
+  end
+
+  #################################
+  ### SEARCH
+  #################################
+
+  public
+
+  index_name "ao3_#{Rails.env}_series"
+  document_type 'series'
+
+  def as_indexed_json(options={})
+    as_json(
+      root: false,
+      only: [:id, :notes, :summary, :title, :created_at],
+      methods: [:published_at, :revised_at]
+    )
   end
 end

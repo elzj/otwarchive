@@ -1,0 +1,2 @@
+class PrivateMessage < Message
+end

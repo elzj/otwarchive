@@ -1,0 +1,2 @@
+class CommentNotification < Message
+end

@@ -8,6 +8,7 @@ class UserSessionsController < ApplicationController
   before_filter :admin_logout_required
   skip_before_filter :store_location
 
+  USER_CHANNEL_KEY = 'user_channel_key'
 
   def show_auth_error
     redirect_to "/auth_error.html"
@@ -22,6 +23,7 @@ class UserSessionsController < ApplicationController
       if @user_session.save
         flash[:notice] = ts("Successfully logged in.")
         @current_user = @user_session.record
+        set_user_channel_cookie
         redirect_back_or_default(@current_user)
       else
         if params[:user_session][:login] && user = User.find_by_login(params[:user_session][:login])
@@ -37,8 +39,8 @@ class UserSessionsController < ApplicationController
               message = ts("The password you entered has expired. Please click the 'Reset password' link below.")
             end
           elsif user.active?
-            if @user_session.being_brute_force_protected? 
-           
+            if @user_session.being_brute_force_protected?
+
               message = ts("Your account has been locked for 5 minutes due to too many failed login attempts.")
             else
               message = ts("The password or user name you entered doesn't match our records. Please try again or click the 'forgot password' link below.")
@@ -60,6 +62,7 @@ class UserSessionsController < ApplicationController
     @user_session = UserSession.find
     if @user_session
       @user_session.destroy
+      clear_user_channel_cookie
       flash[:notice] = ts("Successfully logged out.")
     end
     redirect_back_or_default root_url
@@ -78,5 +81,20 @@ class UserSessionsController < ApplicationController
       format.js
     end
   end
+
+private
+
+  def set_user_channel_cookie
+    key = @current_user.channel_key
+    WebsocketRails[key].make_private
+    cookies[USER_CHANNEL_KEY] = {
+      :value => key,
+      :expires => 30.days.from_now }
+  end
+
+  def clear_user_channel_cookie
+    cookies.delete USER_CHANNEL_KEY
+  end
+
 
 end

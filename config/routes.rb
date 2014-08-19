@@ -219,6 +219,7 @@ Otwarchive::Application.routes.draw do
         get :manage
       end
     end
+    resources :messages
     resources :nominations, :controller => "tag_set_nominations", :only => [:index]
     resources :preferences, :only => [:index, :update]
     resource :profile, :only => [:show], :controller => "profile"

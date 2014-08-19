@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_admin
   helper_method :logged_in?
   helper_method :logged_in_as_admin?
-  
+
   # Title helpers
   helper_method :process_title
 
@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
     cookies[:flash_is_set] = 1 unless flash.empty?
   end
 
-  # So if there is not a user_credentials cookie and the user appears to be logged in then 
+  # So if there is not a user_credentials cookie and the user appears to be logged in then
   # redirect to the logout page
   before_filter :logout_if_not_user_credentials
   def logout_if_not_user_credentials
@@ -38,7 +38,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  
+
   # mark the flash as being set (called when flash is set)
   def set_flash_cookie(key=nil, msg=nil)
     cookies[:flash_is_set] = 1
@@ -47,18 +47,18 @@ class ApplicationController < ActionController::Base
   # def setflash (this is here in case someone is grepping for the definition of the method)
   alias :setflash :set_flash_cookie
 
-protected
-
-  def current_user_session
-    return @current_user_session if defined?(@current_user_session)
-    @current_user_session = UserSession.find
-  end
-
   def current_user
     @current_user = current_user_session && current_user_session.record
     # if Rails.env.development? && params[:force_current_user].present?
     #   @current_user = User.find_by_login(params[:force_current_user])
     # end
+  end
+
+protected
+
+  def current_user_session
+    return @current_user_session if defined?(@current_user_session)
+    @current_user_session = UserSession.find
   end
 
   def current_admin_session
@@ -77,14 +77,14 @@ protected
   def logged_in_as_admin?
     current_admin.nil? ? false : true
   end
-  
+
   def guest?
     !(logged_in? || logged_in_as_admin?)
   end
-  
+
   def process_title(string)
   	string = string.humanize.titleize
-  
+
   	string = string.sub("Faq", "FAQ")
   	string = string.sub("Tos", "TOS")
   	string = string.sub("Dmca", "DMCA")
@@ -145,8 +145,8 @@ public
   def users_only
     logged_in? || access_denied
   end
-  
-  # Filter method - requires user to have opendoors privs 
+
+  # Filter method - requires user to have opendoors privs
   def opendoors_only
     (logged_in? && permit?("opendoors")) || access_denied
   end
@@ -194,7 +194,7 @@ public
       redirect_to root_path
     end
   end
-  
+
   # Hide admin banner via cookies
   before_filter :hide_banner
   def hide_banner
@@ -227,7 +227,7 @@ public
     flash[:error] = ts("Sorry, you're not allowed to do that.")
     redirect_to (fallback || root_path) rescue redirect_to '/'
   end
-  
+
 
   @over_anon_threshold = true if @over_anon_threshold.nil?
 
@@ -252,7 +252,7 @@ public
     @page_title += " [#{ArchiveConfig.APP_NAME}]" unless options[:omit_archive_name]
     @page_title.html_safe
   end
-  
+
   # Define media for fandoms menu
   before_filter :set_media
   def set_media
@@ -315,7 +315,7 @@ public
     return true if current_user.preference && current_user.preference.adult
     return false
   end
-  
+
   def use_caching?
     %w(staging production).include?(Rails.env) && @admin_settings.enable_test_caching?
   end
@@ -357,8 +357,8 @@ public
     elsif @check_visibility_of.is_a? Skin
       access_denied unless logged_in_as_admin? || current_user_owns?(@check_visibility_of) || @check_visibility_of.official?
     else
-      is_hidden = (@check_visibility_of.respond_to?(:visible) && !@check_visibility_of.visible) || 
-                  (@check_visibility_of.respond_to?(:visible?) && !@check_visibility_of.visible?) || 
+      is_hidden = (@check_visibility_of.respond_to?(:visible) && !@check_visibility_of.visible) ||
+                  (@check_visibility_of.respond_to?(:visible?) && !@check_visibility_of.visible?) ||
                   (@check_visibility_of.respond_to?(:hidden_by_admin?) && @check_visibility_of.hidden_by_admin?)
       can_view_hidden = logged_in_as_admin? || current_user_owns?(@check_visibility_of)
       access_denied if (is_hidden && !can_view_hidden)

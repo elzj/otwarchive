@@ -62,6 +62,8 @@ gem 'timeliness'
 
 gem 'rpm_contrib'
 
+gem 'websocket-rails'
+
 # for generating graphs
 gem "google_visualr", ">= 2.1"
 

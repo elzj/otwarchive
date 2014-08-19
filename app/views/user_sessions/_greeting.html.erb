@@ -4,6 +4,7 @@
     <ul class="user navigation actions" role="navigation">
       <li class="dropdown">
         <%= link_to ts("Hi, %{current_user}!", :current_user => current_user.login), user_path(current_user) %>
+        <span id='messagecount' style=''><%= Message.for_recipient(current_user).unread.count %></span>
         <ul class="menu" role="menu">
           <li><%= span_if_current ts("My Dashboard"), user_path(current_user) %></li>
           <% if @current_user.subscriptions.count > 0 %>

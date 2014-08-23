@@ -1,8 +1,11 @@
 class Message < ActiveRecord::Base
-  attr_accessible :body, :read, :recipient_id, :replied_to, :sender_id, :thread_id, :title, :type
 
-  validates :sender_id, presence: true
-  validates :recipient_id, presence: true
+  belongs_to :user
+  belongs_to :parent, polymorphic: true
+  belongs_to :sender, class_name: 'User'
+  belongs_to :recipient, class_name: 'User'
+
+  validates :user_id, presence: true
   validates :body, presence: true
 
   after_create :notify_recipient
@@ -12,15 +15,7 @@ class Message < ActiveRecord::Base
   ################################
 
   def self.for_user(user)
-    where("recipient_id = ? OR sender_id = ?", user.id, user.id)
-  end
-
-  def self.for_sender(user)
-    where(sender_id: user.id)
-  end
-
-  def self.for_recipient(user)
-    where(recipient_id: user.id)
+    where(user_id: user.id)
   end
 
   def self.unread
@@ -35,12 +30,14 @@ class Message < ActiveRecord::Base
   # INSTANCE METHODS
   ################################
 
-  def recipient
-    User.where(id: recipient_id).first
-  end
-
-  def sender
-    User.where(id: sender_id).first
+  def display_date
+    if created_at > Time.now.beginning_of_day
+      created_at.strftime("%l:%H %P")
+    elsif created_at > Time.now.beginning_of_year
+      created_at.strftime("%b %e")
+    else
+      created_at.strftime("%b %e, %Y")
+    end
   end
 
   def notify_recipient

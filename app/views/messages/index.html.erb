@@ -1,0 +1,36 @@
+<h1>Inbox</h1>
+
+<%= form_tag '#' do %>
+
+<table>
+  <thead>
+    <tr>
+      <td></td>
+      <td>Sender</td>
+      <td>Subject</td>
+      <td>Date</td>
+      <td>Actions</td>
+    </tr>
+  </thead>
+  <tbody>
+    <% @messages.each do |message| %>
+      <tr>
+        <td><%= check_box_tag :selected, message.id %></td>
+        <td><%= message.sender_name %></td>
+        <td style='max-width: 300px; padding-right: 1em;'>
+          <h3 style='margin: 0; padding: 0'><%= message.title %></h3>
+          <span class='preview' style='margin:0.5em 0; display:block'>
+            <%= truncate(strip_tags(message.body), length: 300) %>
+          </span>
+        </td>
+        <td><%= message.display_date %></td>
+        <td>
+          <span><%= link_to 'Reply', '' %></span>
+          <span style='margin: 0 0.5em'><%= link_to 'Delete', '' %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<% end %>

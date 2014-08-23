@@ -4,15 +4,11 @@ class MessagesController < ApplicationController
   before_filter :check_ownership
 
   def index
-    if params[:show] == 'sent'
-      @messages = Message.for_sender(@user)
-    else
-      @messages = Message.for_recipient(@user)
-    end
+    @messages = Message.for_user(@user)
     if params[:status] == 'unread'
       @messages = @messages.unread
     end
-    @messages = @messages.order('created_at DESC').paginate(params[:page])
+    @messages = @messages.order('created_at DESC').page(params[:page])
   end
 
   def show
@@ -37,6 +33,13 @@ class MessagesController < ApplicationController
 
   def destroy
     @message = Message.find(params[:id])
+  end
+
+  protected
+
+  def load_user
+    @user = User.find_by_login(params[:user_id])
+    @check_ownership_of = @user
   end
 
 end

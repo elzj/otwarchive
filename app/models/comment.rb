@@ -23,7 +23,7 @@ class Comment < ActiveRecord::Base
   def check_for_spam
     errors.add(:base, ts("This comment looks like spam to our system, sorry! Please try again, or create an account to comment.")) unless check_for_spam?
   end
-  
+
   validates :content, :uniqueness => {:scope => [:commentable_id, :commentable_type, :name, :email, :pseud_id], :message => ts("^This comment has already been left on this work. (It may not appear right away for performance reasons.)")}
 
   scope :recent, lambda { |*args| {:conditions => ["created_at > ?", (args.first || 1.week.ago.to_date)]} }
@@ -83,6 +83,24 @@ class Comment < ActiveRecord::Base
   # Is this a first-class comment?
   def top_level?
     !self.reply_comment?
+  end
+
+  def edited?
+    edited_at.present?
+  end
+
+  # Users who should be notified about this comment
+  def concerned_users
+    users = []
+    # the user who left the comment
+    users << comment_owner
+    # the owner of the parent comment, if any
+    if reply_comment?
+      users << commentable.comment_owner
+    end
+    # the owners of the commentable object
+    users += ultimate_parent.commentable_owners
+    users.compact.uniq.select{ |u| u.is_a?(User) }
   end
 
   def comment_owner

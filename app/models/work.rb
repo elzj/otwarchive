@@ -7,8 +7,8 @@ class Work < ActiveRecord::Base
   include Bookmarkable
   include Pseudable
   include WorkStats
-  include Tire::Model::Search
-  include Tire::Model::Callbacks
+  include Elasticsearch::Model
+  include Elasticsearch::Model::Callbacks
 
   ########################################################################
   # ASSOCIATIONS
@@ -46,57 +46,6 @@ class Work < ActiveRecord::Base
   has_many :challenge_assignments, :as => :creation
   has_many :challenge_claims, :as => :creation
   accepts_nested_attributes_for :challenge_claims
-
-  has_many :filter_taggings, :as => :filterable
-  has_many :filters, :through => :filter_taggings
-  has_many :direct_filter_taggings, :class_name => "FilterTagging", :as => :filterable, :conditions => "inherited = 0"
-  has_many :direct_filters, :source => :filter, :through => :direct_filter_taggings
-
-  has_many :taggings, :as => :taggable, :dependent => :destroy
-  has_many :tags, :through => :taggings, :source => :tagger, :source_type => 'Tag'
-
-  has_many :ratings,
-    :through => :taggings,
-    :source => :tagger,
-    :source_type => 'Tag',
-    :before_remove => :remove_filter_tagging,
-    :conditions => "tags.type = 'Rating'"
-  has_many :categories,
-    :through => :taggings,
-    :source => :tagger,
-    :source_type => 'Tag',
-    :before_remove => :remove_filter_tagging,
-    :conditions => "tags.type = 'Category'"
-  has_many :warnings,
-    :through => :taggings,
-    :source => :tagger,
-    :source_type => 'Tag',
-    :before_remove => :remove_filter_tagging,
-    :conditions => "tags.type = 'Warning'"
-  has_many :fandoms,
-    :through => :taggings,
-    :source => :tagger,
-    :source_type => 'Tag',
-    :before_remove => :remove_filter_tagging,
-    :conditions => "tags.type = 'Fandom'"
-  has_many :relationships,
-    :through => :taggings,
-    :source => :tagger,
-    :source_type => 'Tag',
-    :before_remove => :remove_filter_tagging,
-    :conditions => "tags.type = 'Relationship'"
-  has_many :characters,
-    :through => :taggings,
-    :source => :tagger,
-    :source_type => 'Tag',
-    :before_remove => :remove_filter_tagging,
-    :conditions => "tags.type = 'Character'"
-  has_many :freeforms,
-    :through => :taggings,
-    :source => :tagger,
-    :source_type => 'Tag',
-    :before_remove => :remove_filter_tagging,
-    :conditions => "tags.type = 'Freeform'"
 
   acts_as_commentable
   has_many :total_comments, :class_name => 'Comment', :through => :chapters
@@ -236,15 +185,15 @@ class Work < ActiveRecord::Base
   before_save :check_for_invalid_tags
   before_update :validate_tags
   after_update :adjust_series_restriction
-  
+
   after_save :expire_caches
-  
+
   def expire_caches
     self.pseuds.each do |pseud|
       pseud.update_works_index_timestamp!
       pseud.user.update_works_index_timestamp!
     end
-    
+
     self.all_collections.each do |collection|
       collection.update_works_index_timestamp!
     end
@@ -327,7 +276,7 @@ class Work < ActiveRecord::Base
   #
   #   raise DraftSaveError unless work.save && chapters_saved == work.chapters.length
   # end
-  
+
   def self.find_by_url(url)
     url = UrlFormatter.new(url)
     Work.where(:imported_from_url => url.original).first ||
@@ -518,25 +467,25 @@ class Work < ActiveRecord::Base
   end
 
   def set_revised_at(date=nil)
-    date ||= self.chapters.where(:posted => true).maximum('published_at') || 
+    date ||= self.chapters.where(:posted => true).maximum('published_at') ||
         self.revised_at || self.created_at
     date = date.instance_of?(Date) ? DateTime::jd(date.jd, 12, 0, 0) : date
     self.revised_at = date
   end
-  
+
   def set_revised_at_by_chapter(chapter)
     return if self.posted? && !chapter.posted?
     if (self.new_record? || chapter.posted_changed?) && chapter.published_at == Date.today
       self.set_revised_at(Time.now) # a new chapter is being posted, so most recent update is now
-    elsif self.revised_at.nil? || 
-        chapter.published_at > self.revised_at.to_date || 
+    elsif self.revised_at.nil? ||
+        chapter.published_at > self.revised_at.to_date ||
         chapter.published_at_changed? && chapter.published_at_was == self.revised_at.to_date
       # revised_at should be (re)evaluated to reflect the chapter's pub date
       max_date = self.chapters.where('id != ? AND posted = 1', chapter.id).maximum('published_at')
       max_date = max_date.nil? ? chapter.published_at : [max_date, chapter.published_at].max
       self.set_revised_at(max_date)
-    # else 
-      # In all other cases, we don't want to touch revised_at, since the chapter's pub date doesn't 
+    # else
+      # In all other cases, we don't want to touch revised_at, since the chapter's pub date doesn't
       # affect it. Setting revised_at to any Date will change its time to 12:00, likely changing the
       # work's position in date-sorted indexes, so don't do it unnecessarily.
     end
@@ -1248,16 +1197,24 @@ class Work < ActiveRecord::Base
   #
   #############################################################################
 
-  mapping do
-    indexes :authors_to_sort_on,  :index    => :not_analyzed
-    indexes :title_to_sort_on,    :index    => :not_analyzed
-    indexes :title,               :boost => 20
-    indexes :creator,             :boost => 15
-    indexes :revised_at,          :type  => 'date'
+  index_name    "ao3_#{Rails.env}_works"
+  document_type "work"
+
+  settings index: { number_of_shards: 5 } do
+    mappings do
+      indexes :title, analyzer: 'simple'
+      indexes :creator, analyzer: 'simple'
+      indexes :authors_to_sort_on, analyzer: 'not analyzed'
+      indexes :title_to_sort_on, analyzer: 'not analyzed'
+    end
   end
 
-  def to_indexed_json
-    to_json(methods:
+  def as_indexed_json(options={})
+    as_json(
+    root: false,
+    except: [:delta, :summary_sanitizer_version, :notes_sanitizer_version,
+      :endnotes_sanitizer_version, :hit_count_old, :last_visitor_old],
+    methods:
       [ :rating_ids,
         :warning_ids,
         :category_ids,
@@ -1273,44 +1230,24 @@ class Work < ActiveRecord::Base
         :comments_count,
         :kudos_count,
         :bookmarks_count,
-        :creator
+        :creators,
+        :crossover,
+        :work_types
       ])
   end
 
-  # Simple name to make it easier for people to use in full-text search
-  def tag
-    (tags + filters).uniq.map{ |t| t.name }
-  end
-
-  # Index all the filters for pulling works
-  def filter_ids
-    filters.value_of :id
-  end
-
-  # Index only direct filters (non meta-tags) for facets
-  def filters_for_facets
-    @filters_for_facets ||= filters.where("filter_taggings.inherited = 0")
-  end
-  def rating_ids
-    filters_for_facets.select{ |t| t.type.to_s == 'Rating' }.map{ |t| t.id }
-  end
-  def warning_ids
-    filters_for_facets.select{ |t| t.type.to_s == 'Warning' }.map{ |t| t.id }
-  end
-  def category_ids
-    filters_for_facets.select{ |t| t.type.to_s == 'Category' }.map{ |t| t.id }
-  end
-  def fandom_ids
-    filters_for_facets.select{ |t| t.type.to_s == 'Fandom' }.map{ |t| t.id }
-  end
-  def character_ids
-    filters_for_facets.select{ |t| t.type.to_s == 'Character' }.map{ |t| t.id }
-  end
-  def relationship_ids
-    filters_for_facets.select{ |t| t.type.to_s == 'Relationship' }.map{ |t| t.id }
-  end
-  def freeform_ids
-    filters_for_facets.select{ |t| t.type.to_s == 'Freeform' }.map{ |t| t.id }
+  def bookmarkable_json
+    as_json(
+      root: false,
+      only: 
+        [ :title, :summary, :posted, :restricted, :hidden_by_admin, :revised_at, :created_at ],
+      methods:
+        [ :rating_ids, :warning_ids, :category_ids, :fandom_ids, :character_ids,
+          :relationship_ids, :freeform_ids, :filter_ids, :tag, :pseud_ids,
+          :collection_ids, :hits, :comments_count, :kudos_count, :bookmarks_count,
+          :creators, :crossover, :work_types 
+        ]
+    )
   end
 
   def pseud_ids
@@ -1330,19 +1267,30 @@ class Work < ActiveRecord::Base
     self.stat_counter.bookmarks_count
   end
 
-  def creator
-    names = ""
+  def creators
     if anonymous?
-      names = "Anonymous"
+      ["Anonymous"]
     else
-      pseuds.each do |pseud|
-        names << "#{pseud.name} #{pseud.user_login} "
-      end
-      external_author_names.value_of(:name).each do |name|
-        names << "#{name} "
-      end
+      pseuds.map(&:byline) + external_author_names.value_of(:name)
     end
-    names
+  end
+
+  def crossover
+    filters.by_type('Fandom').first_class.count > 1
+  end
+
+  def work_types
+    types = []
+    video_ids = [44011]
+    audio_ids = [70308]
+    art_ids = [7844, 125758]
+    types << "Video" if (filter_ids & video_ids).present?
+    types << "Audio" if (filter_ids & audio_ids).present?
+    types << "Art" if (filter_ids & art_ids).present?
+    if types.empty? || word_count > 200
+      types << "Text"
+    end
+    types
   end
 
 end

@@ -2,50 +2,50 @@ class BookmarkIndexer
 
   CLIENT = Elasticsearch::Model.client
 
+  attr_reader :bookmark
+
   def initialize(bookmark)
     @bookmark = bookmark
   end
 
   ####### CLASS METHODS
 
-  def self.create_mappings
-    %w(work series external_work).each do |type|
-      CLIENT.indices.put_mapping(
-        { index: index_name(type),
-          type: "#{type}_bookmark",
-          body: mapping(type)
-        }
-      )
-    end
+  def self.create_mapping
+    CLIENT.indices.put_mapping(
+      index: index_name,
+      type: "bookmark",
+      body: mapping
+    )
   end
 
-  def self.mapping(type)
+  def self.mapping
     {
-      "#{type}_bookmark" => {
-        "_parent" => type.underscore,
+      "bookmark" => {
+        "_parent" => {
+          type: 'bookmarkable'
+        },
         properties: {
-
+          notes: {
+            type: 'string',
+            analyzer: 'snowball'
+          }
         }
       }
     }
   end
 
-  def self.index_name(type)
-    "ao3_#{Rails.env}_#{type.pluralize}"
+  def self.index_name(type=nil)
+    "ao3_#{Rails.env}_bookmarks"
   end
 
   ####### INSTANCE METHODS
 
   def index_name
-    self.class.index_name(parent_type)
-  end
-
-  def parent_type
-    bookmark.bookmarkable_type.underscore
+    self.class.index_name
   end
 
   def document_type
-    "#{parent_type}_bookmark"
+    'bookmark'
   end
 
   def index_document

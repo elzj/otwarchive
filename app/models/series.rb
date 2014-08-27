@@ -14,31 +14,31 @@ class Series < ActiveRecord::Base
   has_many :users, :through => :pseuds, :uniq => true
 
   has_many :subscriptions, :as => :subscribable, :dependent => :destroy
-   
+
   validates_presence_of :title
-  validates_length_of :title, 
-    :minimum => ArchiveConfig.TITLE_MIN, 
+  validates_length_of :title,
+    :minimum => ArchiveConfig.TITLE_MIN,
     :too_short=> ts("must be at least %{min} letters long.", :min => ArchiveConfig.TITLE_MIN)
 
-  validates_length_of :title, 
-    :maximum => ArchiveConfig.TITLE_MAX, 
+  validates_length_of :title,
+    :maximum => ArchiveConfig.TITLE_MAX,
     :too_long=> ts("must be less than %{max} letters long.", :max => ArchiveConfig.TITLE_MAX)
-    
+
   # return title.html_safe to overcome escaping done by sanitiser
   def title
     read_attribute(:title).try(:html_safe)
   end
 
-  validates_length_of :summary, 
-    :allow_blank => true, 
-    :maximum => ArchiveConfig.SUMMARY_MAX, 
+  validates_length_of :summary,
+    :allow_blank => true,
+    :maximum => ArchiveConfig.SUMMARY_MAX,
     :too_long => ts("must be less than %{max} letters long.", :max => ArchiveConfig.SUMMARY_MAX)
-    
-  validates_length_of :notes, 
-    :allow_blank => true, 
-    :maximum => ArchiveConfig.NOTES_MAX, 
+
+  validates_length_of :notes,
+    :allow_blank => true,
+    :maximum => ArchiveConfig.NOTES_MAX,
     :too_long => ts("must be less than %{max} letters long.", :max => ArchiveConfig.NOTES_MAX)
-    
+
   after_save :adjust_restricted
 
   attr_accessor :authors
@@ -46,30 +46,47 @@ class Series < ActiveRecord::Base
 
   attr_protected :summary_sanitizer_version
   attr_protected :notes_sanitizer_version
-  
+
   scope :visible_to_registered_user, {:conditions => {:hidden_by_admin => false}, :order => 'series.updated_at DESC'}
   scope :visible_to_all, {:conditions => {:hidden_by_admin => false, :restricted => false}, :order => 'series.updated_at DESC'}
-  
-  scope :exclude_anonymous, 
-    joins("INNER JOIN `serial_works` ON (`series`.`id` = `serial_works`.`series_id`) 
+
+  scope :exclude_anonymous,
+    joins("INNER JOIN `serial_works` ON (`series`.`id` = `serial_works`.`series_id`)
            INNER JOIN `works` ON (`works`.`id` = `serial_works`.`work_id`)").
     group("series.id").
     having("MAX(works.in_anon_collection) = 0 AND MAX(works.in_unrevealed_collection) = 0")
-  
+
   scope :for_pseuds, lambda {|pseuds|
     joins("INNER JOIN creatorships ON (series.id = creatorships.creation_id AND creatorships.creation_type = 'Series')").
-    where("creatorships.pseud_id IN (?)", pseuds.collect(&:id)) 
-  } 
- 
+    where("creatorships.pseud_id IN (?)", pseuds.collect(&:id))
+  }
+
   def posted_works
     self.works.posted
   end
-  
+
   # Get the filters for the works in this series
   def filters
-    Tag.joins("JOIN filter_taggings ON tags.id = filter_taggings.filter_id JOIN works ON works.id = filter_taggings.filterable_id JOIN serial_works ON serial_works.work_id = works.id").where("serial_works.series_id = #{self.id} AND works.posted = 1 AND filter_taggings.filterable_type = 'Work'").group("tags.id")
+    Tag.joins("JOIN filter_taggings ON tags.id = filter_taggings.filter_id
+               JOIN works ON works.id = filter_taggings.filterable_id
+               JOIN serial_works ON serial_works.work_id = works.id").
+        where("serial_works.series_id = #{self.id} AND
+               works.posted = 1 AND
+               filter_taggings.filterable_type = 'Work'").
+        group("tags.id")
   end
-  
+
+  def direct_filters
+    Tag.joins("JOIN filter_taggings ON tags.id = filter_taggings.filter_id
+               JOIN works ON works.id = filter_taggings.filterable_id
+               JOIN serial_works ON serial_works.work_id = works.id").
+        where("serial_works.series_id = #{self.id} AND
+               works.posted = 1 AND
+               filter_taggings.filterable_type = 'Work' AND
+               filter_taggings.inherited = 0").
+        group("tags.id")
+  end
+
   # visibility aped from the work model
   def visible(current_user=User.current_user)
     if current_user.is_a?(Admin) || (current_user.is_a?(User) && current_user.is_author_of?(self))
@@ -84,34 +101,35 @@ class Series < ActiveRecord::Base
   def visible?(user=User.current_user)
     self.visible(user) == self
   end
-  
+
   def visible_work_count
     if User.current_user.nil?
-      self.works.posted.unrestricted.count      
+      self.works.posted.unrestricted.count
     else
       self.works.posted.count
-    end 
+    end
   end
-  
+
   def visible_word_count
     if User.current_user.nil?
-      # visible_works_wordcount = self.works.posted.unrestricted.sum(:word_count)
-      visible_works_wordcount = self.works.posted.unrestricted.value_of(:word_count).compact.sum
+      self.works.posted.unrestricted.value_of(:word_count).compact.sum
     else
-      # visible_works_wordcount = self.works.posted.sum(:word_count)
-      visible_works_wordcount = self.works.posted.value_of(:word_count).compact.sum
+      word_count
     end
-    visible_works_wordcount
   end
-  
+
+  def word_count
+    self.works.posted.value_of(:word_count).compact.sum
+  end
+
   def anonymous?
-    !self.works.select { |work| work.anonymous? }.empty?    
+    !self.works.select { |work| work.anonymous? }.empty?
   end
-	
+
   def unrevealed?
-    !self.works.select { |work| work.unrevealed? }.empty?    
+    !self.works.select { |work| work.unrevealed? }.empty?
   end
-  
+
   # if the series includes an unrestricted work, restricted should be false
   # if the series includes no unrestricted works, restricted should be true
   def adjust_restricted
@@ -120,17 +138,17 @@ class Series < ActiveRecord::Base
       self.save(:validate => false)
     end
   end
-	
+
   # Change the positions of the serial works in the series
   def reorder(positions)
     SortableList.new(self.serial_works.in_order).reorder_list(positions)
   end
-  
+
   # return list of pseuds on this series
   def allpseuds
     works.collect(&:pseuds).flatten.compact.uniq.sort
   end
-  
+
   # return list of users on this series
   def owners
     self.authors.collect(&:user)
@@ -155,7 +173,7 @@ class Series < ActiveRecord::Base
     self.authors.flatten!
     self.authors.uniq!
   end
-  
+
   # Remove a user as an author of this series
   def remove_author(author_to_remove)
     pseuds_with_author_removed = self.pseuds - author_to_remove.pseuds
@@ -168,20 +186,20 @@ class Series < ActiveRecord::Base
       end
     end
   end
-  
+
   # returns list of fandoms on this series
   def allfandoms
     works.collect(&:fandoms).flatten.compact.uniq.sort
   end
-  
+
   def author_tags
     self.work_tags.select{|t| t.type == "Relationship"}.sort + self.work_tags.select{|t| t.type == "Character"}.sort + self.work_tags.select{|t| t.type == "Freeform"}.sort
   end
-  
+
   def tag_groups
     self.work_tags.group_by { |t| t.type.to_s }
   end
-  
+
   # Grabs the earliest published_at date of the visible works in the series
   def published_at
     if self.works.visible.posted.blank?
@@ -190,12 +208,80 @@ class Series < ActiveRecord::Base
       Work.in_series(self).visible.collect(&:published_at).compact.uniq.sort.first
     end
   end
-  
+
   def revised_at
     if self.works.visible.posted.blank?
-      self.updated_at   
+      self.updated_at
     else
       Work.in_series(self).visible.collect(&:revised_at).compact.uniq.sort.last
     end
   end
+
+  ######################
+  # SEARCH
+  ######################
+
+  def bookmarkable_json
+    as_json(
+      root: false,
+      only: [:title, :summary, :hidden_by_admin, :restricted],
+      methods: [:revised_at, :posted, :tag, :filter_ids, :rating_ids,
+        :warning_ids, :category_ids, :fandom_ids, :character_ids,
+        :relationship_ids, :freeform_ids, :pseud_ids, :creators, :language_id, :word_count]
+    )
+  end
+
+  # FIXME: should series have their own language?
+  def language_id
+    works.first.language_id
+  end
+
+  def posted
+    !posted_works.empty?
+  end
+
+  # Simple name to make it easier for people to use in full-text search
+  def tag
+    (work_tags + filters).uniq.map{ |t| t.name }
+  end
+
+  # Index all the filters for pulling works
+  def filter_ids
+    filters.value_of :id
+  end
+
+  # Index only direct filters (non meta-tags) for facets
+  def filters_for_facets
+    @filters_for_facets ||= direct_filters
+  end
+  def rating_ids
+    filters_for_facets.select{ |t| t.type.to_s == 'Rating' }.map{ |t| t.id }
+  end
+  def warning_ids
+    filters_for_facets.select{ |t| t.type.to_s == 'Warning' }.map{ |t| t.id }
+  end
+  def category_ids
+    filters_for_facets.select{ |t| t.type.to_s == 'Category' }.map{ |t| t.id }
+  end
+  def fandom_ids
+    filters_for_facets.select{ |t| t.type.to_s == 'Fandom' }.map{ |t| t.id }
+  end
+  def character_ids
+    filters_for_facets.select{ |t| t.type.to_s == 'Character' }.map{ |t| t.id }
+  end
+  def relationship_ids
+    filters_for_facets.select{ |t| t.type.to_s == 'Relationship' }.map{ |t| t.id }
+  end
+  def freeform_ids
+    filters_for_facets.select{ |t| t.type.to_s == 'Freeform' }.map{ |t| t.id }
+  end
+
+  def pseud_ids
+    creatorships.value_of :pseud_id
+  end
+
+  def creators
+    anonymous? ? ['Anonymous'] : pseuds.map(&:byline)
+  end
+
 end

@@ -4,7 +4,10 @@ module Bookmarkable
     bookmarkable.class_eval do
       has_many :bookmarks, :as => :bookmarkable
       has_many :user_tags, :through => :bookmarks, :source => :tags
-      after_update :update_bookmarks_index
+      
+      after_commit lambda { BookmarkableIndexer.new(self).index_document  },  on: :create
+      after_commit lambda { BookmarkableIndexer.new(self).update_document },  on: :update
+      after_commit lambda { BookmarkableIndexer.new(self).delete_document },  on: :destroy
     end
   end
 
@@ -14,8 +17,13 @@ module Bookmarkable
     end
   end
 
+  # DEPRECATED
   def update_bookmarks_index
     RedisSearchIndexQueue.queue_bookmarks(self.bookmarks.value_of :id)
+  end
+
+  def bookmarkable_type
+    self.class.to_s
   end
 
 end

@@ -81,6 +81,8 @@ gem 'coveralls', require: false
 # Add a clean notifier that shows we are on dev or test
 gem "rack-dev-mark"
 
+gem 'rack-attack'
+
 #Phrase-app
 gem 'phrase'
 

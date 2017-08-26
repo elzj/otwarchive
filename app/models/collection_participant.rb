@@ -18,6 +18,7 @@ class CollectionParticipant < ApplicationRecord
                          [ts("Moderator"), MODERATOR],
                          [ts("Owner"), OWNER] ]
 
+  validates :pseud_id, presence: true
   validates_uniqueness_of :pseud_id, scope: [:collection_id],
     message: ts("That person appears to already be a participant in that collection.")
 

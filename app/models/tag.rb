@@ -829,39 +829,7 @@ class Tag < ApplicationRecord
     # we do this
     reindex_taggables do
       if old_filter_id
-        old_filter = Tag.find(old_filter_id)
-        # An old merger of a tag needs to be removed
-        # This means we remove the old merger itself and all its meta tags unless they
-        # should remain because of other existing tags of the work (or because they are
-        # also meta tags of the new merger)
-        self.works.each do |work|
-          filters_to_remove = [old_filter] + old_filter.meta_tags
-          filters_to_remove.each do |filter_to_remove|
-            if work.filters.include?(filter_to_remove)
-              # We collect all sub tags, i.e. the tags that would have the filter_to_remove as
-              # meta. If any of these or its mergers (synonyms) are tags of the work, the
-              # filter_to_remove remains
-              all_sub_tags = filter_to_remove.sub_tags + [filter_to_remove]
-              sub_mergers = all_sub_tags.empty? ? [] : all_sub_tags.collect(&:mergers).flatten.compact
-              all_tags_with_filter_to_remove_as_meta = all_sub_tags + sub_mergers
-              # don't include self because at this point in time (before the save) self
-              # is still in the list of submergers from when it was a synonym to the old filter
-              remaining_tags = work.tags - [self]
-              # instead we add the new merger of self (if there is one) as the relevant one to check
-              remaining_tags += [self.merger] unless self.merger.nil?
-              if (remaining_tags & all_tags_with_filter_to_remove_as_meta).empty? # none of the remaining tags need filter_to_remove
-                work.filter_taggings.where(filter_id: filter_to_remove).destroy_all
-                filter_to_remove.reset_filter_count
-              else # we should keep filter_to_remove, but check if inheritence needs to be updated
-                direct_tags_for_filter_to_remove = filter_to_remove.mergers + [filter_to_remove]
-                if (remaining_tags & direct_tags_for_filter_to_remove).empty? # not tagged with filter or mergers directly
-                  ft = work.filter_taggings.where(["filter_id = ?", filter_to_remove.id]).first
-                  ft.update_attribute(:inherited, true)
-                end
-              end
-            end
-          end
-        end
+        FilterManagement::FilterRemover.new(self, old_filter_id).perform!
       else
         self.filter_taggings.destroy_all
         self.reset_filter_count
@@ -985,28 +953,7 @@ class Tag < ApplicationRecord
   # with the meta tag or one of its synonyms or a different sub tag of the meta tag or one of its synonyms
   def remove_meta_filters(meta_tag_id)
     meta_tag = Tag.find(meta_tag_id)
-    # remove meta tag from this tag's sub tags
-    self.sub_tags.each {|sub| sub.meta_tags.delete(meta_tag) if sub.meta_tags.include?(meta_tag)}
-    # remove inherited meta tags from this tag and all of its sub tags
-    inherited_meta_tags = meta_tag.meta_tags
-    inherited_meta_tags.each do |tag|
-      self.meta_tags.delete(tag) if self.meta_tags.include?(tag)
-      self.sub_tags.each {|sub| sub.meta_tags.delete(tag) if sub.meta_tags.include?(tag)}
-    end
-    # remove filters for meta tag from this tag's works
-    other_sub_tags = meta_tag.sub_tags - ([self] + self.sub_tags)
-    self.filtered_works.each do |work|
-      to_remove = [meta_tag] + inherited_meta_tags
-      to_remove.each do |tag|
-        if work.filters.include?(tag) && (work.filters & other_sub_tags).empty?
-          unless work.tags.include?(tag) || !(work.tags & tag.mergers).empty?
-            work.filter_taggings.where(filter_id: tag.id).destroy_all
-            RedisSearchIndexQueue.reindex(work, priority: :low)
-          end
-        end
-      end
-    end
-    meta_tag.update_works_index_timestamp!
+    FilterManagement::MetaTagCleanup.new(self, meta_tag).perform!
   end
 
   def remove_sub_filters(sub_tag)

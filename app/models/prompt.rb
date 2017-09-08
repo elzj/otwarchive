@@ -277,8 +277,8 @@ class Prompt < ApplicationRecord
   # both requester and offerer were specific about their desires, and had a lot
   # of overlap.
   def count_tags_matched(other)
-    self_tags = full_tag_set.tags.map(&:id)
-    other_tags = other.full_tag_set.tags.map(&:id)
+    self_tags = full_tag_set.tags.pluck(:id)
+    other_tags = other.full_tag_set.tags.pluck(:id)
     (self_tags & other_tags).size
   end
 

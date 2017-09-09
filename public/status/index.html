@@ -154,12 +154,11 @@ ransformative Works">OTW</a></li>
         document.write(unescape("%3Cscript src='/javascripts/jquery-ui.min.js' type='text/javascript'%3E%3C/script%3E"));
       }
     </script>
-    <script type="text/javascript">$j = jQuery.noConflict();</script>
     <script src="/javascripts/bootstrap/bootstrap-dropdown.js" type="text/javascript"></script>
     <script src="/javascripts/jquery.timeago.min.js" type="text/javascript"></script>
     <script type="text/javascript">
-      $j(document).ready(function(){
-        $j("#tabs").tabs({
+      $(document).ready(function(){
+        $("#tabs").tabs({
           beforeLoad: function(event, ui){
             ui.jqXHR.error(function(){
               ui.panel.html("We are having issues loading this page." + 'Follow <a href="http://twitter.com/ao3_status/">@AO3_Status</a> on Twitter for updates.');
@@ -169,8 +168,8 @@ ransformative Works">OTW</a></li>
       });
     </script>
     <script type="text/javascript">
-      $j(function(){
-        $j(document).tooltip();
+      $(function(){
+        $(document).tooltip();
       });
     </script>
   </body>

@@ -112,18 +112,18 @@
 <!--/content-->
 <%= content_for :footer_js do %>
   <%= javascript_tag do %>
-    $j(document).ready(function() {
-      $j("#expand-fandoms").removeClass("hidden").click(function(e) {
+    $(document).ready(function() {
+      $("#expand-fandoms").removeClass("hidden").click(function(e) {
         e.preventDefault();
-        $j(".more").toggleClass("hidden");
-        $j("#collapse-fandoms").toggleClass("hidden");
-        $j(this).toggleClass("hidden");
+        $(".more").toggleClass("hidden");
+        $("#collapse-fandoms").toggleClass("hidden");
+        $(this).toggleClass("hidden");
       });
-      $j("#collapse-fandoms").click(function(e) {
+      $("#collapse-fandoms").click(function(e) {
         e.preventDefault();
-        $j(".more").toggleClass("hidden");
-        $j("#expand-fandoms").toggleClass("hidden");
-        $j(this).toggleClass("hidden");
+        $(".more").toggleClass("hidden");
+        $("#expand-fandoms").toggleClass("hidden");
+        $(this).toggleClass("hidden");
       });          
     });
   <% end %>

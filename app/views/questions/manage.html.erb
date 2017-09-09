@@ -23,16 +23,16 @@
 
 <%= content_for :footer_js do %>
   <%= javascript_tag do %>
-    $j("#sortable_question_list").sortable({
+    $("#sortable_question_list").sortable({
     delay: 300,
     update: function(event, ui) {
-    $j(".question-position-list").each(function(index, li){
-    var questionId = $j(li).attr("id").replace("question_","");
-    $j("#position-for-"+questionId).html(index+1);
+    $(".question-position-list").each(function(index, li){
+    var questionId = $(li).attr("id").replace("question_","");
+    $("#position-for-"+questionId).html(index+1);
     });
-    $j.ajax({
+    $.ajax({
     type: 'post',
-    data: $j("#sortable_question_list").sortable("serialize") + "&archive_faq_id=<%= @archive_faq.id %>",
+    data: $("#sortable_question_list").sortable("serialize") + "&archive_faq_id=<%= @archive_faq.id %>",
     dataType: 'script',
     url: "<%= url_for(action: :update_positions) %>"})
     }

@@ -91,11 +91,11 @@
           <%= javascript_tag do %>
             var name_id = "#comment_name_for_<%= commentable.id %>";
             var email_id = "#comment_email_for_<%= commentable.id %>";
-            if (!$j(name_id).val()) {
-              $j(name_id).val($j.cookie('comment_name'));
+            if (!$(name_id).val()) {
+              $(name_id).val($.cookie('comment_name'));
             }
-            if (!$j(email_id).val()) {
-              $j(email_id).val($j.cookie('comment_email'));
+            if (!$(email_id).val()) {
+              $(email_id).val($.cookie('comment_email'));
             }
           <% end %>
         <% end %>

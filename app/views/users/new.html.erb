@@ -39,8 +39,8 @@
 
 <%= content_for :footer_js do %>
   <%= javascript_tag do %>
-    $j(document).ready(function(){
-        $j('#user_registration_form').preventDoubleSubmit();
+    $(document).ready(function(){
+        $('#user_registration_form').preventDoubleSubmit();
      })
   <% end %>
 <% end %>

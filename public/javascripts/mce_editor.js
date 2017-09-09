@@ -80,26 +80,26 @@ function removeEditor(id) {
 }
 
 // Toggle between the links
-$j(document).ready(function(){
-  $j(".rtf-html-switch").removeClass('hidden');
+$(document).ready(function(){
+  $(".rtf-html-switch").removeClass('hidden');
   
-  $j(".html-link").addClass('current'); 
+  $(".html-link").addClass('current'); 
   
-  $j(".rtf-link").click(function(event){
+  $(".rtf-link").click(function(event){
     addEditor('content');
-    $j(this).addClass('current');
-    $j('.rtf-notes').removeClass('hidden');
-    $j('.html-link').removeClass('current');
-    $j('.html-notes').addClass('hidden');
+    $(this).addClass('current');
+    $('.rtf-notes').removeClass('hidden');
+    $('.html-link').removeClass('current');
+    $('.html-notes').addClass('hidden');
     event.preventDefault();
   });            
   
-  $j('.html-link').click(function(event){
+  $('.html-link').click(function(event){
     removeEditor('content');
-    $j(this).addClass('current');
-    $j('.html-notes').removeClass('hidden');
-    $j('.rtf-link').removeClass('current');
-    $j('.rtf-notes').addClass('hidden');
+    $(this).addClass('current');
+    $('.html-notes').removeClass('hidden');
+    $('.rtf-link').removeClass('current');
+    $('.rtf-notes').addClass('hidden');
     event.preventDefault();
   });
 })

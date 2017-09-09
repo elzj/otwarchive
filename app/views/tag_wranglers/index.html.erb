@@ -56,7 +56,7 @@
               <%= select_tag_to_add %>
               <span class="action" title="add more">
                 <%= link_to_function("+",
-                                 "$j('#wranglers-for-#{assignments.first.id}').append('<p>" + escape_javascript(select_tag_to_add) + "</p>')") %>
+                                 "$('#wranglers-for-#{assignments.first.id}').append('<p>" + escape_javascript(select_tag_to_add) + "</p>')") %>
               </span>
             </p>
           </dd>

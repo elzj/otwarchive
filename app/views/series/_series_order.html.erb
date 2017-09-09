@@ -15,16 +15,16 @@
 
 <%= content_for :footer_js do %>
   <%= javascript_tag do %>
-     $j("#sortable_series_list").sortable({
+     $("#sortable_series_list").sortable({
             delay: 300,
             update: function(event, ui) {
-                $j(".serial-position-list").each(function(index, li){
-                    var serialId = $j(li).attr("id").replace("serial_","");
-                    $j("#position-for-"+serialId).html(index+1);
+                $(".serial-position-list").each(function(index, li){
+                    var serialId = $(li).attr("id").replace("serial_","");
+                    $("#position-for-"+serialId).html(index+1);
                   });
-                $j.ajax({
+                $.ajax({
                   type: 'post',
-                  data: $j("#sortable_series_list").sortable("serialize"),
+                  data: $("#sortable_series_list").sortable("serialize"),
                   dataType: 'script',
                   url: "<%= url_for(:action => :update_positions) %>"})
               }

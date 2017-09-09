@@ -1,33 +1,33 @@
 // Expands a group of filters options if one of that type is selected
-$j(document).ready(function() {
+$(document).ready(function() {
   showFilters();
   setupNarrowScreenFilters();
 });
 
 function showFilters() {
-  var filters = $j('dd.tags');
+  var filters = $('dd.tags');
 
   filters.each(function(index, filter) {
-    var tags = $j(filter).find('input');
-    var node = $j(filter);
-    var open_toggles = $j('.' + node.attr('id') + "_open");
-    var close_toggles = $j('.' + node.attr('id') + "_close");
+    var tags = $(filter).find('input');
+    var node = $(filter);
+    var open_toggles = $('.' + node.attr('id') + "_open");
+    var close_toggles = $('.' + node.attr('id') + "_close");
 
     tags.each(function(index, tag) {
-      if($j(tag).is(':checked')) {
-        $j(filter).show();
-        $j(open_toggles).hide();
-        $j(close_toggles).show();
+      if($(tag).is(':checked')) {
+        $(filter).show();
+        $(open_toggles).hide();
+        $(close_toggles).show();
       } //is checked
     }); //tags each
   }); //filters each 
 } //showfilters
 
 function setupNarrowScreenFilters() {
-  var filters = $j('form.filters');
-  var outer = $j('#outer');
-  var show_link = $j('#go_to_filters');
-  var hide_link = $j('#leave_filters');
+  var filters = $('form.filters');
+  var outer = $('#outer');
+  var show_link = $('#go_to_filters');
+  var hide_link = $('#leave_filters');
 
   show_link.click(function(e) {
     e.preventDefault();

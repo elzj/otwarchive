@@ -35,7 +35,7 @@
   </script>
 <% end %>
 
-<script type="text/javascript">$j = jQuery.noConflict();</script>
+<script type="text/javascript">$ = jQuery.noConflict();</script>
 <%= javascript_include_tag "jquery.scrollTo.min", "jquery.livequery.min", "rails", "application", "bootstrap/bootstrap-dropdown.min", "jquery-shuffle", "jquery.tokeninput.min", "jquery.trap.min", "ao3modal.min", "jquery.cookie", "filters.min", skip_pipeline: true %>
 
 <% if allow_tinymce?(controller) %>

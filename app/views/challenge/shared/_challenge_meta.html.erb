@@ -56,16 +56,16 @@
       <h5 style="display:none" id="hide_signups"><%= ts("(See fewer...)") %></h5>
       <%= content_for :footer_js do %>
         <%= javascript_tag do %>
-          $j(document).ready(function(){
-            $j('#show_signups').click(function() {
-                $j('#more_signups').show();
-                $j('#hide_signups').show();
-                $j(this).hide();
+          $(document).ready(function(){
+            $('#show_signups').click(function() {
+                $('#more_signups').show();
+                $('#hide_signups').show();
+                $(this).hide();
               });
-            $j('#hide_signups').click(function() {
-                $j('#more_signups').hide();
-                $j('#show_signups').show(); 
-                $j(this).hide();
+            $('#hide_signups').click(function() {
+                $('#more_signups').hide();
+                $('#show_signups').show(); 
+                $(this).hide();
               });
           })
         <% end %>

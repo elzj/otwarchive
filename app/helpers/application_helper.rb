@@ -398,17 +398,17 @@ module ApplicationHelper
     css_class = checkbox_section_css_class(checkboxes_size)
 
     javascript_bits = content_for(:footer_js) {
-      javascript_tag("$j(document).ready(function(){\n" +
-        "$j('##{checkboxes_id}').find('.actions').show();\n" +
-        "$j('.#{checkboxes_id}_show').click(function() {\n" +
-          "$j('##{checkboxes_id}').find('.index').attr('class', 'options index all');\n" + 
-          "$j('.#{checkboxes_id}_hide').show();\n" +
-          "$j('.#{checkboxes_id}_show').hide();\n" +
+      javascript_tag("$(document).ready(function(){\n" +
+        "$('##{checkboxes_id}').find('.actions').show();\n" +
+        "$('.#{checkboxes_id}_show').click(function() {\n" +
+          "$('##{checkboxes_id}').find('.index').attr('class', 'options index all');\n" + 
+          "$('.#{checkboxes_id}_hide').show();\n" +
+          "$('.#{checkboxes_id}_show').hide();\n" +
         "});" + "\n" + 
-        "$j('.#{checkboxes_id}_hide').click(function() {\n" +
-          "$j('##{checkboxes_id}').find('.index').attr('class', '#{css_class}');\n" +
-          "$j('.#{checkboxes_id}_show').show();\n" +
-          "$j('.#{checkboxes_id}_hide').hide();\n" +
+        "$('.#{checkboxes_id}_hide').click(function() {\n" +
+          "$('##{checkboxes_id}').find('.index').attr('class', '#{css_class}');\n" +
+          "$('.#{checkboxes_id}_show').show();\n" +
+          "$('.#{checkboxes_id}_hide').hide();\n" +
         "});\n" +
       "})")
     }

@@ -65,19 +65,19 @@
   
   <%= content_for :footer_js do %>
     <%= javascript_tag do %>
-      $j(document).ready(function() {
-        $j(".category").children("a").click(function(e) {
-          $j(this).next().toggle();
+      $(document).ready(function() {
+        $(".category").children("a").click(function(e) {
+          $(this).next().toggle();
           e.preventDefault();
         }).next().hide();
  
-        $j("#expand-categories").find("a").click(function(e) {
-          $j(".category").children("ul").show();
+        $("#expand-categories").find("a").click(function(e) {
+          $(".category").children("ul").show();
           e.preventDefault();
         });
 
-        $j("#collapse-categories").find("a").click(function(e) {
-          $j(".category").children("ul").hide();
+        $("#collapse-categories").find("a").click(function(e) {
+          $(".category").children("ul").hide();
           e.preventDefault();
         });
       });

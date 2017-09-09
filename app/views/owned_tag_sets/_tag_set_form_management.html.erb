@@ -41,7 +41,7 @@
     <dd><%= form.check_box :usable %></dd>
 
     <dt><%= form.label :nominated, ts("Currently taking nominations?") %></dt>
-    <dd><%= form.check_box :nominated, :onchange => "if ($j(this).is(':checked')){$j('#nomination_limits').show();} else {$j('#nomination_limits').hide();}" %></dd>
+    <dd><%= form.check_box :nominated, :onchange => "if ($(this).is(':checked')){$('#nomination_limits').show();} else {$('#nomination_limits').hide();}" %></dd>
   </dl>
 </fieldset>
 

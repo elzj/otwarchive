@@ -10,7 +10,7 @@
         <%= (@skin.type && @skin.type == 'WorkSkin') ? ts('Work Skin') : ts('Site Skin') %>
       <% else %>      
         <%= select_tag 'skin_type', options_for_select(Skin::TYPE_OPTIONS, @skin.type || params[:skin_type] ),
-          :onchange => 'if ($j(this).val() == "WorkSkin") {$j("#advanced_skin_fieldset").hide();} else {$j("#advanced_skin_fieldset").show();}' %>
+          :onchange => 'if ($(this).val() == "WorkSkin") {$("#advanced_skin_fieldset").hide();} else {$("#advanced_skin_fieldset").show();}' %>
       <% end %>
     </dd>
   
@@ -49,7 +49,7 @@
         <dt><%= f.label :role, ts('What it does: ')%></dt>
         <dd>
           <%= f.select :role, options_for_select(Skin::ROLE_NAMES.invert, @skin.role || Skin::DEFAULT_ROLE), {},
-              :onchange => 'if ($j(this).val() == "override") {$j(".archive_parents").show();} else {$j(".archive_parents").hide();}' %>
+              :onchange => 'if ($(this).val() == "override") {$(".archive_parents").show();} else {$(".archive_parents").hide();}' %>
         </dd>
       
         <dt><%= f.label :ie_condition, ts('IE Only: ')%></dt>

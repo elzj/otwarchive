@@ -15,16 +15,16 @@
 
 <%= content_for :footer_js do %>
   <%= javascript_tag do %>
-     $j("#sortable_wrangling_guideline_list").sortable({
+     $("#sortable_wrangling_guideline_list").sortable({
             delay: 300,
             update: function(event, ui) {
-                $j(".wrangling_guideline-position-list").each(function(index, li){
-                    var faqId = $j(li).attr("id").replace("wrangling_guideline_","");
-                    $j("#position-for-"+faqId).html(index+1);
+                $(".wrangling_guideline-position-list").each(function(index, li){
+                    var faqId = $(li).attr("id").replace("wrangling_guideline_","");
+                    $("#position-for-"+faqId).html(index+1);
                   });
-                $j.ajax({
+                $.ajax({
                   type: 'post',
-                  data: $j("#sortable_wrangling_guideline_list").sortable("serialize"),
+                  data: $("#sortable_wrangling_guideline_list").sortable("serialize"),
                   dataType: 'script',
                   url: "<%= url_for(:action => :update_positions) %>"})
               }

@@ -11,10 +11,10 @@
       <%= hidden_field "fetched", "", :id => "fetched" %>
       <%= content_for :footer_js do %>
         <%= javascript_tag do %>
-          $j("#bookmark_external_url").blur(function() {
-            $j.ajax({
+          $("#bookmark_external_url").blur(function() {
+            $.ajax({
               type: "get",
-              data: "external_work_url=" + $j("#bookmark_external_url").val(),
+              data: "external_work_url=" + $("#bookmark_external_url").val(),
               dataType: "script",
               url: "<%= url_for(:controller => "external_works", :action => "fetch") %>"
             })

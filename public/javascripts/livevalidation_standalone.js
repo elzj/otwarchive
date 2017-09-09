@@ -278,7 +278,7 @@ LiveValidation.prototype = {
     validateElement: function(validationFunction, validationParamsObj){
         // AO3: we want validations to ignore leading and trailing whitespace, since it will be removed
         var originalValue = (this.elementType == LiveValidation.SELECT) ? this.element.options[this.element.selectedIndex].value : this.element.value;
-        var value = $j.trim(originalValue);
+        var value = $.trim(originalValue);
         // AO3: we also want newlines to be counted as "\r\n"s, regardless of the OS and browsers' whim;
         // AO3: so we count any single "\n"s and "\r"s as "\r\n", which is what they'll end up as in the db anyway
         if(typeof(value)=="string"){

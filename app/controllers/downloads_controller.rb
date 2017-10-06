@@ -5,6 +5,7 @@ class DownloadsController < ApplicationController
   skip_before_action :store_location, only: :show
   before_action :guest_downloading_off, only: :show
   before_action :check_visibility, only: :show
+  after_action :remove_temp_files, only: :show
 
   # named route: download_path
   # Note: only :id and :format need to be correct,
@@ -41,7 +42,6 @@ class DownloadsController < ApplicationController
       # epub for ibooks
       format.epub { download_epub }
     end
-    @work.remove_outdated_downloads
   end
 
 protected
@@ -221,6 +221,11 @@ protected
     if !logged_in? && @admin_settings.guest_downloading_off?
       redirect_to login_path(high_load: true)
     end
+  end
+
+  # Remove tmp file after serving download
+  def remove_temp_files
+    @work.remove_outdated_downloads
   end
 
 end

@@ -1,5 +1,3 @@
-<%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-
 <!-- check to see if this controller/action allow tinymce before we load the gigantor js; see application_helper -->
 <% if allow_tinymce?(controller) %>
   <%= yield :tinymce %>
@@ -29,7 +27,7 @@
 <% end %>
 
 <script type="text/javascript">$j = jQuery.noConflict();</script>
-<%= javascript_include_tag "jquery.scrollTo.min", "jquery.livequery.min", "rails", "application", "bootstrap/bootstrap-dropdown.min", "jquery-shuffle", "jquery.tokeninput.min", "jquery.trap.min", "ao3modal.min", "jquery.cookie", "filters.min", skip_pipeline: true %>
+<%= javascript_include_tag "jquery.scrollTo.min", "jquery.livequery.min", "app", "jquery-shuffle", "jquery.tokeninput.min", "jquery.trap.min", "ao3modal.min", "jquery.cookie", "filters.min", skip_pipeline: true %>
 
 
 <% if allow_tinymce?(controller) %>

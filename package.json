@@ -1,9 +1,12 @@
 {
   "dependencies": {
     "@rails/webpacker": "^3.0.2",
+    "bootstrap": "^3.3.7",
     "jquery": "^3.2.1",
     "rails-ujs": "^5.1.4",
-    "turbolinks": "^5.0.3"
+    "turbolinks": "^5.0.3",
+    "webpack": "^3.7.1",
+    "webpack-merge": "^4.1.0"
   },
   "devDependencies": {
     "webpack-dev-server": "^2.9.1"

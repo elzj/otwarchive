@@ -70,3 +70,6 @@ features_report.html
 coverage
 
 .rspec
+/public/packs
+/public/packs-test
+/node_modules

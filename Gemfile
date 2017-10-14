@@ -11,6 +11,8 @@ gem 'rails', '~> 5.1'
 gem 'rails-observers', git: 'https://github.com/rails/rails-observers'
 gem 'actionpack-page_caching'
 gem 'rails-controller-testing'
+gem 'turbolinks', '~> 5.0.0'
+gem 'webpacker', '~> 3.0'
 #gem 'activerecord-deprecated_finders'
 
 # the published gem does not include fixes that are in Rails

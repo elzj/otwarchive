@@ -368,7 +368,7 @@ function setupDropdown(){
   $j('#header').find('.dropdown, .dropdown .actions').children('a').attr({
     'class': 'dropdown-toggle',
     'data-toggle': 'dropdown',
-    'data-target': '#'
+    'data-target': '#d' // jQuery 3 chokes if just given a #
   });
   $j('.dropdown').find('.menu').addClass("dropdown-menu");
   $j('.dropdown').find('.menu').children('li').attr("role", "menu-item");

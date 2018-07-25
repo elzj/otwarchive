@@ -68,6 +68,8 @@ gem 'css_parser'
 
 gem 'cocaine'
 gem 'paperclip', '>= 5.2.0'
+gem 'paperclip-av-transcoder'
+gem "delayed_paperclip"
 
 # for looking up image dimensions quickly
 gem 'fastimage'

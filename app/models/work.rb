@@ -9,6 +9,7 @@ class Work < ApplicationRecord
   include WorkStats
   include WorkChapterCountCaching
   include ActiveModel::ForbiddenAttributesProtection
+  include ActionView::Helpers::NumberHelper
 
   ########################################################################
   # ASSOCIATIONS
@@ -88,6 +89,14 @@ class Work < ApplicationRecord
   # return title.html_safe to overcome escaping done by sanitiser
   def title
     read_attribute(:title).try(:html_safe)
+  end
+
+  def length_label
+    "Words"
+  end
+
+  def length
+    number_with_delimiter(word_count)
   end
 
   ########################################################################
@@ -172,8 +181,6 @@ class Work < ApplicationRecord
   before_save :validate_authors, :clean_and_validate_title, :validate_published_at, :ensure_revised_at
 
   after_save :post_first_chapter
-  before_save :set_word_count
-
   after_save :save_chapters, :save_parents, :save_new_recipients
 
   before_create :set_anon_unrevealed
@@ -827,19 +834,6 @@ class Work < ApplicationRecord
   def chapter_total_display
     current = self.posted? ? self.number_of_posted_chapters : 1
     current.to_s + '/' + self.wip_length.to_s
-  end
-
-  # Set the value of word_count to reflect the length of the chapter content
-  # Called before_save
-  def set_word_count
-    if self.new_record?
-      self.word_count = 0
-      chapters.each do |chapter|
-        self.word_count += chapter.set_word_count
-      end
-    else
-      self.word_count = Chapter.select("SUM(word_count) AS work_word_count").where(work_id: self.id, posted: true).first.work_word_count
-    end
   end
 
   after_update :remove_outdated_downloads

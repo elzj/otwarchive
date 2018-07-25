@@ -82,8 +82,8 @@
       <dt class="language"><%= ts("Language") %>:</dt>
       <dd class="language"><%= work.language.name %></dd>
     <% end %>
-    <dt class="words"><%= ts('Words') %>:</dt>
-    <dd class="words"><%= number_with_delimiter(work.word_count) %></dd>
+    <dt class="words"><%= ts(work.length_label) %>:</dt>
+    <dd class="words"><%= work.length %></dd>
     <dt class="chapters"><%= ts('Chapters') %>:</dt>
     <dd class="chapters"><%= work.chapter_total_display %></dd>
 

@@ -182,9 +182,33 @@ module AutocompleteSource
 
       # final sort is O(NlogN) but N is only the number of complete phrase results which should be relatively small
       results = scored_results.keys.sort do |k1, k2|
-        exact[k1] && !exact[k2] ? -1 : (exact[k2] && !exact[k1] ? 1 :
-          count[k1] > count[k2] ? -1 : (count[k2] > count[k1] ? 1 :
-            scored_results[options[:sort] == "down" ? k2 : k1].to_i <=> scored_results[options[:sort] == "down" ? k1 : k2].to_i))
+        # if there's an exact match for the first key but not the second
+        # rank the first one higher
+        if exact[k1] && !exact[k2]
+          -1
+        # if there's an exact match for the second but not the first
+        # rank the second higher
+        elsif exact[k2] && !exact[k1]
+          1
+        # rank the first higher if it has more hits
+        elsif count[k1] > count[k2]
+          -1
+        # rank the second higher if that has more hits
+        elsif count[k2] > count[k1]
+          1
+        # rank by combined score
+        elsif options[:sort] == "down"
+          scored_results[k2].to_i <=> scored_results[k1].to_i
+        else
+          scored_results[k1].to_i <=> scored_results[k2].to_i
+        end
+        # exact[k1] && !exact[k2] ? -1 : (
+        #   exact[k2] && !exact[k1] ? 1 :
+        #     count[k1] > count[k2] ? -1 : (
+        #       count[k2] > count[k1] ? 1 :
+        #         scored_results[options[:sort] == "down" ? k2 : k1].to_i <=> scored_results[options[:sort] == "down" ? k1 : k2].to_i
+        #     )
+        # )
       end
       limit = options[:limit] || 15
 

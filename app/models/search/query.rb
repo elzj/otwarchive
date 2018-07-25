@@ -15,6 +15,30 @@ class Query
     )
   end
 
+  def suggest(term, options = {})
+    body = {
+      "_source" => "suggest",
+      suggest: {
+        autocomplete_me: {
+          prefix: term,
+          completion: {
+            field: "suggest",
+            contexts: options[:contexts] || {},
+            size: options[:size] || 10
+          }
+        }
+      }
+    }
+    results = $new_elasticsearch.search(
+      index: index_name,
+      type: document_type,
+      body: body
+    )
+    results.dig('suggest', 'autocomplete_me').
+            first['options'].
+            map{ |r| r.dig('_source', 'suggest', 'input').first } rescue []
+  end
+
   def search_results
     response = search
     QueryResult.new(klass, response, { page: page, per_page: per_page })

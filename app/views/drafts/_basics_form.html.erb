@@ -1,0 +1,81 @@
+<%= form_for(@draft, url: '/drafts/new/tags', html: { id: "work-form", class: "verbose post work" }) do |f| %>
+
+  <fieldset class="preface" role="article">
+    <legend><%= ts("Preface") %></legend>
+    <h3 class="landmark heading"><%= ts("Preface") %></h3>
+    <dl>
+      <dt><%= f.label :type %></dt>
+      <dd><%= f.select :type, options_for_select(Work::TYPES) %></dd>
+
+      <dt class="title required">
+        <%= f.label :title, ts("Work Title") + "*" %>
+      </dt>
+      <dd class="title required">
+        <%= f.text_field :title, class: "observe_textlength text" %>
+        <%= live_validation_for_field("draft_title",
+              maximum_length: ArchiveConfig.TITLE_MAX,
+              minimum_length: ArchiveConfig.TITLE_MIN,
+              failureMessage: ts("We need a title! (At least %{min_length} characters long, please.)",
+                min_length: ArchiveConfig.TITLE_MIN.to_s))
+        %>
+        <%= generate_countdown_html("work_title", ArchiveConfig.TITLE_MAX) %>
+      </dd>
+
+      <dt class="summary">
+        <%= f.label :summary, ts("Summary", max: ArchiveConfig.SUMMARY_MAX.to_s) %>
+      </dt>
+      <dd class="summary">
+        <%= f.text_area :summary, class: "observe_textlength" %>
+        <%= live_validation_for_field("draft_summary", presence: false,
+              maximum_length: ArchiveConfig.SUMMARY_MAX) %>
+        <%= generate_countdown_html("work_summary", ArchiveConfig.SUMMARY_MAX) %>
+      </dd>
+
+      <!-- notes -->
+      <%= render "works/notes_form", f: f, type: "work" %>
+
+      <dt class="language">
+        <%= f.label :language_id, ts('Choose a language') %>
+        <%= link_to_help "languages-help" %>
+      </dt>
+      <dd class="language">
+        <%= f.select :language_id, options_for_select(Language.for_posting) %>
+      </dd>
+    </dl>
+  </fieldset>
+  <!-- privacy settings -->
+  <fieldset class="privacy" role="article">
+    <legend><%= ts("Privacy") %></legend>
+    <h3 class="landmark heading"><%= ts("Privacy") %></h3>
+    <dl>
+      <!-- Privacy dropdown (storyprivacy) -->
+      <dt class="restrict">
+        <%= f.check_box :restricted %>
+      </dt>
+
+      <dd class="restrict">
+        <%= f.label :restricted, ts("Only show your work to registered users") %>
+        <%= link_to_help "registered-users" %>
+      </dd>
+
+      <dt class="anonymous comments">
+        <%= f.check_box :anon_commenting_disabled %>
+      </dt>
+      <dd class="anonymous comments">
+        <%= f.label :anon_commenting_disabled, ts("Disable anonymous commenting") %>
+        <%= link_to_help "comments-anonymous" %>
+      </dd>
+
+      <dt class="moderated comments">
+        <%= f.check_box :moderated_commenting_enabled %>
+      </dt>
+      <dd class="moderated comments">
+        <%= f.label :moderated_commenting_enabled, ts("Enable comment moderation") %>
+        <%= link_to_help "comments-moderated" %>
+      </dd>
+    </dl>
+  </fieldset>
+
+  <%= f.hidden_field :id, value: @draft.id %>
+  <%= f.submit 'Next: Add Tags' %>
+<% end %>

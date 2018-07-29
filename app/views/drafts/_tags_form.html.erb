@@ -1,0 +1,120 @@
+<%= form_for(@draft, url: '/drafts/new/content', html: { id: "work-form", class: "verbose post work" }) do |f| %>
+
+  <fieldset class="work meta">
+  <legend><%= ts('Tags') %></legend>
+  <h3 class="landmark heading"><%= ts('Tags') %></h3>
+
+  <p class="note">
+    <%= ts('Tags are comma separated, %{max} characters per tag.',
+              max: ArchiveConfig.TAG_MAX) %>
+    </p>
+
+  <dl>
+    <dt class="rating required">
+      <%= f.label :ratings, "#{Rating::NAME}*" %>
+      <%= link_to_help "rating-help" %>
+    </dt>
+    <dd class="rating required">
+      <%= f.collection_select :ratings,
+                              Rating.defaults_by_severity,
+                              :name,
+                              :name, 
+                              include_blank: false %>
+    </dd>
+
+    <dt class="warning required">
+      <label><%= "#{Warning::NAME.pluralize}*" %></label>
+      <%= link_to_help "warning-help" %>
+    </dt>
+    <dd class="warning required">
+      <fieldset class="warnings">
+        <!--<legend class="landmark">Warning</legend>-->
+        <ul>
+          <%= f.collection_check_boxes(:warnings, Warning.canonical.by_name, :name, :name) do |tag| %>
+            <li>
+              <%= tag.check_box %>
+              <%= tag.label %>
+            </li>
+          <% end %>
+        </ul>
+      </fieldset>
+    </dd>
+
+    <dt class="fandom required">
+      <%= f.label :fandoms, Fandom::NAME.pluralize %>*
+      <%= link_to_help "fandom-help" %>
+    </dt>
+    <dd class="fandom required" title="<%= ts('fandoms') %>">
+      <%= f.text_field :fandoms,
+            autocomplete_options(
+              'fandom',
+              id: "draft_fandom",
+              title: ts('fandoms')
+            ) %>
+      <p class="footnote"><%= ts('If this is the first work for a fandom, it may not show up in the fandoms page for a day or two.') %></p>
+    </dd>
+
+    <dt class="category">
+      <label><%= Category::NAME %></label>
+      <%= link_to_help "categories-help" %>
+    </dt>
+    <dd class="category">
+      <fieldset>
+        <!--<legend class="landmark">Category</legend>-->
+        <ul>
+          <%= f.collection_check_boxes(:categories, Category.canonical.by_name.sort, :name, :name) do |tag| %>
+            <li>
+              <%= tag.check_box %>
+              <%= tag.label %>
+            </li>
+          <% end %>
+        </ul>
+      </fieldset>
+    </dd>
+
+    <dt class="relationship" title="<%= ts('relationships') %>">
+      <%= f.label :relationships, Relationship::NAME.pluralize %>
+      <%= link_to_help "relationships-help" %>
+    </dt>
+    <dd class="relationship" title="<%= ts('relationships') %>">
+      <%= f.text_field :relationships,
+            autocomplete_options(
+              "relationship_in_fandom",
+              id: "draft_relationship",
+              title: ts('relationships'),
+              autocomplete_live_params: 'fandom=draft_fandom'
+            ) %>
+    </dd>
+
+    <dt class="character" title="<%= ts('characters') %>">
+      <%= f.label :characters, Character::NAME.pluralize %>
+      <%= link_to_help "characters-help" %>
+    </dt>
+    <dd class="character" title="<%= ts('characters') %>">
+      <%= f.text_field :characters,
+            autocomplete_options(
+              'character_in_fandom', 
+              id: "draft_character",
+              title: ts('characters'),
+              autocomplete_live_params: 'fandom=draft_fandom'
+            ) %>
+    </dd>
+
+    <dt class="freeform" title="<%= ts('additional tags') %>">
+      <%= f.label :freeforms, Freeform::NAME %>
+      <%= link_to_help "additional-tags-help" %>
+    </dt>
+    <dd class="freeform" title="<%= ts('additional tags') %>">
+      <%= f.text_field :freeforms,
+            autocomplete_options(
+              'freeform',
+              id: "draft_freeform",
+              title: ts('additional tags'
+            )) %>
+    </dd>
+  </dl>
+  </fieldset>
+
+  <%= f.hidden_field :id, value: @draft.id %>
+  <%= f.submit 'Next: Add Your Work', class: 'btn btn-primary' %>
+<% end %>

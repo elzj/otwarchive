@@ -1,0 +1,152 @@
+<%= form_for(@draft, url: '/drafts/new/extras', html: { id: "work-form", class: "verbose post work" }) do |f| %>
+  <fieldset>
+    <legend><%= ts("Creators") %></legend>
+    <dl>
+      <% if current_user.pseuds.count > 1 %>
+        <dt class="byline">
+          <%= f.label :creators, ts("Creator/Pseud(s)") %>
+        </dt>
+        <dd class="byline">
+          <%= select_tag "draft[author_attributes][ids][]",
+                options_from_collection_for_select(
+                  current_user.pseuds,
+                  :id,
+                  :name
+                ),
+                multiple: true %>
+        </dd>
+      <% end %>
+
+      <dt class="byline coauthors">
+       <%= label_tag "co-authors-options-show", ts("Add co-creators?") %>
+      </dt>
+      <dd class="byline coauthors">
+        <%= check_box_tag "co-authors-options-show", "1", nil, class: "toggle_formfield" %>
+        <fieldset id="co-authors-options" title="<%= ts("Add co-creators") %>">
+          <%= text_field :pseud, :byline, autocomplete_options("pseud", size: 50) %>
+        </fieldset>
+      </dd>
+    </dl>
+  </fieldset>
+
+  <fieldset id="associations" role="article">
+    <legend><%= ts("Associations") %></legend>
+    <h3 class="landmark heading"><%= ts("Associations") %></h3>
+    <dl>
+      <% if @challenge_assignments.present? %>
+        <!-- if the user has open assignments? -->
+        <dt class="collection">
+          <%= f.label "challenge_assignment_ids[]", ts("Does this fulfill a challenge assignment") %>
+          <%= link_to_help "add-work-to-assignment" %>
+        </dt>
+        <dd class="collection listbox group">
+          <h4 class="heading"><%= ts("Open Assignments") %></h4>
+        </dd>
+      <% end %>
+
+      <% if @challenge_claims.present? %>
+        <!-- if the user has open claims? -->
+        <dt class="collection">
+          <%= f.label "challenge_claim_ids[]", ts("Fulfill a Claim") %>
+          <%= link_to_help "add-work-to-assignment" %>
+        </dt>
+        <dd class="collection listbox group">
+          <h4 class="heading"><%= ts("Open Claims") %></h4>
+        </dd>
+      <% end %>
+
+      <!-- Add collection -->
+      <dt class="collection" title="<%= ts("post to collection or challenge") %>">
+        <%= f.label :collections, ts("Post to Collections / Challenges") %>
+        <%= link_to_help "add-collectible-to-collection" %>
+      </dt>
+      <dd class="collection" title="<%= ts("post to collection or challenge") %>">
+        <%= f.text_field :collections, autocomplete_options("open_collection_names") %>
+      </dd>
+
+      <dt class="recipient" title="<%= ts("gift to") %>">
+        <%= f.label :recipients, ts("Gift this work to") %>
+        <%= link_to_help "recipients" %>
+      </dt>
+      <dd class="recipient" title="<%= ts("gift to") %>">
+        <%= f.text_field :recipients, autocomplete_options("pseud") %>
+      </dd>
+
+      <!-- Inspiration / remix -->
+      <dt class="parent">
+        <%= check_box_tag "parent-options-show", "1", check_parent_box(@draft), class: "toggle_formfield" %>
+      </dt>
+      <dd class="parent">
+        <%= label_tag "parent-options-show", ts("This work is a remix, a translation, a podfic, or was inspired by another work") %>
+        <%= link_to_help "parent-works-help" %>
+
+        <!-- Toggles on with parent checkbox -->
+        <fieldset id="parent-options">
+          <dl>
+            <%= fields_for "work[parent_attributes]" do |p| %>
+              <dt><%= p.label :url, ts("URL") %></dt>
+              <dd>
+                <%= p.text_field :url, value: work_parent_value(:url),
+                      "aria-describedby" => "parent-attributes-url-field-description" %>
+                <p class="important footnote" id="parent-attributes-url-field-description">
+                  <%= ts("For a work in the Archive, only the URL is required.") %>
+                </p>
+              </dd>
+
+              <dt><%= p.label :title %></dt>
+              <dd><%= p.text_field :title, value: work_parent_value(:title) %></dd>
+
+              <dt><%= p.label :author %></dt>
+              <dd><%= p.text_field :author, value: work_parent_value(:author) %></dd>
+
+              <dt>
+                <%= p.label :language_id, ts("Language") %>
+                <%= link_to_help "languages-help" %>
+              </dt>
+              <dd>
+                <%= p.collection_select(:language_id, Language.order(:short), :id, :name, prompt: " ") %>
+              </dd>
+
+              <dt class="translation"><%= p.check_box :translation %></dt>
+              <dd class="translation">
+                <%= p.label :translation, ts("This is a translation") %>
+                <%= link_to_help "translation-link" %>
+              </dd>
+            <% end %>
+          </dl>
+        </fieldset>
+      </dd>
+
+      <!-- Series checkbox (storyseriescheck) -->
+      <!-- Checking this box causes the "manage series" dropdown to appear; unchecking it causes it to disappear. -->
+      <dt class="serial">
+        <%= check_box_tag "series-options-show", "1", false, class: "toggle_formfield" %>
+      </dt>
+      <dd class="serial">
+        <%= label_tag "series-options-show", ts("This work is part of a series") %>
+        <%= link_to_help "choosing-series" %>
+
+        <!-- Toggles on with series checkbox -->
+        <fieldset id="series-options">
+          <dl>
+            <%= fields_for "work[series_attributes]" do |s| %>
+              <dt><%= s.label "id", ts("Choose one of your existing series:") %></dt>
+              <dd>
+                <%= s.collection_select(:id, @series, :id, :title, { selected: work_series_value(:id), prompt: true }) %>
+              </dd>
+
+              <dt><%= s.label :title, ts("Or create and use a new one:") %></dt>
+              <dd><%= s.text_field :title, value: work_series_value(:title) %></dd>
+            <% end %>
+          </dl>
+        </fieldset>
+      </dd>
+    </dl>
+
+  </fieldset>
+
+  <%= f.hidden_field :id, value: @draft.id %>
+  <p><%= f.submit 'Preview Draft', class: 'btn btn-secondary' %></p>
+  <p><%= f.submit 'Post Work', class: 'btn btn-primary' %></p>
+
+<% end %>

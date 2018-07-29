@@ -2,13 +2,13 @@
 <% @collection_item ||= CollectionItem.new %>
 <% in_page ||= false %>
 <div id="collection-form">
-  <h3 class="heading"><%= ts("Add %{title} to collections", :title => item.respond_to?(:title) ? item.title : item.class.name).html_safe %></h3>
+  <h3 class="heading"><%= ts("Add %{title} to collections", :title => item.respond_to?(:title) ? item.title : item.model_name.name).html_safe %></h3>
   <%
     # when in the works controller, such as for a non-multi-chapter work, form_for does not set work_id
     # so the create action of the collection_items controller fails to find the targetted work
     # hence the klutzy workaround with setting the <item_class>_id manually in the url, below
   %>
-  <%= form_for([item, @collection_item], :url => { (item.class.name.foreign_key).to_sym => item.id, :controller => 'collection_items', :action => :create}) do |form| %>
+  <%= form_for([item, @collection_item], :url => { (item.model_name.name.foreign_key).to_sym => item.id, :controller => 'collection_items', :action => :create}) do |form| %>
   <dl>
     <dt><%= label_tag :collection_names, ts("Collection name(s): ") %></dt>
     <dd title="collection name">

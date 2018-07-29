@@ -79,7 +79,7 @@ module WorkStats
     # just a small utility so the methods below work regardless of whether this module is included in
     # a work or in a hit counter
     def get_work_id
-      self.class.name == 'Work' ? self.id : self.work_id
+      is_a?(Work) ? id : work_id
     end
 
     # get the redis key for this statistic

@@ -1,0 +1,2 @@
+class DraftUploader < Shrine
+end

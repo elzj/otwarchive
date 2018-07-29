@@ -175,6 +175,7 @@ GEM
     docile (1.1.5)
     domain_name (0.5.20170404)
       unf (>= 0.0.5, < 1.0.0)
+    down (4.5.0)
     elasticsearch (6.0.0)
       elasticsearch-api (= 6.0.0)
       elasticsearch-transport (= 6.0.0)
@@ -400,6 +401,8 @@ GEM
     shoulda-context (1.2.2)
     shoulda-matchers (2.8.0)
       activesupport (>= 3.0.0)
+    shrine (2.11.0)
+      down (~> 4.1)
     simplecov (0.14.1)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
@@ -552,6 +555,7 @@ DEPENDENCIES
   sanitize (>= 4.6.5)
   selenium-webdriver
   shoulda
+  shrine
   simplecov (~> 0.14.0)
   test-unit (~> 3.2)
   timecop

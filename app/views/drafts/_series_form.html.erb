@@ -1,0 +1,18 @@
+<%= form_for @draft, url: '/drafts/new/extras', html: { class: 'form' } do |f| %>
+
+  <h4>Series</h4>
+  <div class="form-group">
+    <%= f.fields_for :series do |series_form| %>
+      <%= series_form.label :title %>
+      <%= series_form.text_field :title, class: 'form-control' %>
+
+      <%= series_form.label :position %>
+      <%= series_form.text_field :position, class: 'form-control' %>     
+    <% end %>
+  </div>
+
+  <%= f.hidden_field :id, value: @draft.id %>
+  <p><%= f.submit 'Preview Draft', class: 'btn btn-secondary' %></p>
+  <p><%= f.submit 'Post Work', class: 'btn btn-primary' %></p>
+
+<% end %>

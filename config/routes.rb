@@ -377,6 +377,12 @@ Otwarchive::Application.routes.draw do
     resources :bookmarks
   end
 
+  resources :drafts
+  get '/drafts/new/:stage', to: 'drafts#new'
+  post '/drafts/new/:stage', to: 'drafts#create'
+  patch '/drafts/new/:stage', to: 'drafts#create'
+
+
   #### COLLECTIONS ####
 
   resources :gifts, only: [:index] do

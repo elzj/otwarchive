@@ -1,0 +1,90 @@
+<%= form_for(@draft, url: '/drafts/new/extras', html: { id: "work-form", class: "verbose post work" }) do |f| %>
+
+  <%= f.fields_for :chapter do |c| %>
+    <fieldset class="work text" role="article">
+      <legend class="required"><%= ts("Work Text") %>*</legend>
+      <ul class="hidden rtf-html-switch actions" role="menu">
+        <li><a class="rtf-link" href="#"><%= ts("Rich Text") %></a></li>
+        <li><a class="html-link" href="#"><%= ts("HTML") %></a></li>
+      </ul>
+      <p class="rtf-html-instructions note">
+        <span class="html-notes"><%= allowed_html_instructions %></span>
+        <span class="hidden rtf-notes">
+          <%= ts("Type or paste formatted text.") %><%= link_to_help "rte-help" %>
+        </span>
+      </p>
+      <p class="notice">
+        <%= ts("<strong>Note:</strong> Text entered in the posting form is <strong>not</strong> automatically saved. Always keep a backup copy of your work.").html_safe %>
+      </p>
+
+      <% use_tinymce %>
+        <div class="rtf-html-field">
+          <h4 class="landmark heading"><%= ts("Work Text") %>*</h4>
+          <%= c.text_area :content,
+                class: "mce-editor observe_textlength large", id: "content" %>
+          <%= live_validation_for_field(
+                "content",
+                Chapter::CONTENT_VALIDATIONS ) %>
+
+          <%= generate_countdown_html(
+                "content",
+                ArchiveConfig.CONTENT_MAX_DISPLAYED) %>
+        </div>
+      </fieldset>
+
+      <!-- Chaptered checkbox (work_is_wip) -->
+      <!-- Checking this box causes the expected number of chapters box to appear; unchecking it causes it to disappear. -->
+      <dt class="chaptered wip">
+        <%= check_box_tag "chapters-options-show", "1", false, class: "toggle_formfield" %>
+      </dt>
+      <dd class="chaptered wip">
+        <%= label_tag "chapters-options-show", ts("This work has multiple chapters") %>
+
+        <fieldset id="chapters-options">
+          <dl>
+            <dt><%= ts("Chapter 1 of") %></dt>
+            <dd><%= f.text_field :expected_number_of_chapters, class: "number" %></dd>
+            <dt><%= ts("Chapter Title:") %></dt>
+            <dd><%= c.text_field :title %></dd>
+          </dl>
+        </fieldset>
+      </dd>
+
+      <!--backdate-->
+      <dt class="backdate">
+        <%= f.check_box :backdate, { id: "backdate-options-show", class: "toggle_formfield" } %>
+      </dt>
+      <dd class="backdate">
+        <%= label_tag "backdate-options-show", ts("Set a different publication date") %>
+        <%= link_to_help "backdating-help" %>
+
+        <fieldset id="backdate-options" class="optional">
+          <dl>
+            <dt><%= label_tag "published_at", ts("Set publication date") %></dt>
+            <dd id="managePublicationDate" class="datetime" title="<%= ts("set date") %>">
+              <!--BACK END, this select box does not seem to be acquiring the label published_at -->
+              <%= c.date_select(
+                "published_at",
+                start_year: Date.today.year,
+                end_year: 1950,
+                default: Date.today,
+                order: [:day, :month, :year]
+              ) %>
+            </dd>
+          </dl>
+        </fieldset>
+      </dd>
+    </dl>
+  <% end %>
+
+  <% if @draft.has_media? %>
+    <%= f.label :media, @draft.media_type %>
+    <%= f.file_field :media, as: :file, class: 'form-control' %>
+  <% end %>
+
+  <%= f.hidden_field :id, value: @draft.id %>
+  <p><%= f.submit 'Add Co-Creators, Series, Collections and More', class: 'btn btn-info', style: { width: '100%' } %></p>
+  <p><%= f.submit 'Preview Draft', class: 'btn btn-secondary' %></p>
+  <p><%= f.submit 'Post Work', class: 'btn btn-primary' %></p>
+
+<% end %>

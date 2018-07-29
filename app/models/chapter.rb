@@ -1,6 +1,17 @@
 # encoding=utf-8
 
 class Chapter < ApplicationRecord
+  CONTENT_VALIDATIONS = {
+    maximum_length: ArchiveConfig.CONTENT_MAX_DISPLAYED,
+    minimum_length: ArchiveConfig.CONTENT_MIN,
+    tooLongMessage: ts("We salute your ambition! But sadly the content must be less than %{max} characters long. (Maybe you want to create a multi-chaptered work?)",
+      max: ArchiveConfig.CONTENT_MAX_DISPLAYED.to_s),
+    tooShortMessage: ts("Brevity is the soul of wit, but your content does have to be at least %{min} characters long.",
+      min: ArchiveConfig.CONTENT_MIN.to_s),
+    failureMessage: ts("Brevity is the soul of wit, but your content does have to be at least %{min} characters long.",
+      min: ArchiveConfig.CONTENT_MIN.to_s)
+  }
+
   include ActiveModel::ForbiddenAttributesProtection
   include HtmlCleaner
   include WorkChapterCountCaching

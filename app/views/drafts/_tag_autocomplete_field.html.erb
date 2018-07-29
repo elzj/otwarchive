@@ -1,0 +1,4 @@
+<div class="form-group">
+  <%= f.label tag_type %>
+  <%= f.autocomplete_field tag_type, autocomplete_api_tags_path(type: tag_type.to_s.classify), 'data-delimiter' => ', ', 'class' => 'form-control' %>
+</div>

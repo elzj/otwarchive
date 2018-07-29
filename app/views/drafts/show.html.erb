@@ -1,0 +1,9 @@
+<h1><%= @draft.title %></h1>
+
+<div><%= @draft.summary %></div>
+
+<%= @draft.metadata.inspect %>
+
+<% if @draft.media %>
+  <div><%= display_draft_media(@draft) %></div>
+<% end %>

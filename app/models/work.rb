@@ -1,4 +1,11 @@
 class Work < ApplicationRecord
+  TYPES = [
+    ['Text or Multimedia', 'TextWork'],
+    ['Art', 'ArtWork'],
+    ['Audio', 'AudioWork'],
+    ['Video', 'VideoWork']
+  ]
+
   include Taggable
   include Creatable
   include Collectible

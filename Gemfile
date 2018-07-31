@@ -6,7 +6,7 @@ gem 'test-unit', '~> 3.2'
 
 gem 'bundler'
 
-gem 'rails', '~> 5.1'
+gem 'rails', '~> 5.2'
 
 gem 'rails-observers', git: 'https://github.com/rails/rails-observers'
 gem 'actionpack-page_caching'
@@ -76,7 +76,7 @@ gem 'fastimage'
 # Gems for authentication
 gem 'devise'
 gem 'devise-async'       # To mails through queues
-gem 'authlogic', '~> 3.6.0'
+gem 'authlogic' #, '~> 3.6.0'
 gem 'bcrypt'
 
 # A highly updated version of the authorization plugin
@@ -107,7 +107,8 @@ gem 'google_visualr', git: 'https://github.com/stephendolan/google_visualr'
 
 # Globalize for translations
 # Must use master branch and activemodel-serializers-xml for Rails 5 upgrade
-gem 'globalize', git: 'https://github.com/panorama-berlin/globalize'
+#gem 'globalize', git: 'https://github.com/panorama-berlin/globalize'
+gem 'globalize', git: 'https://github.com/globalize/globalize'
 gem 'activemodel-serializers-xml'
 
 # Add a clean notifier that shows we are on dev or test
@@ -144,7 +145,7 @@ group :test do
   gem 'selenium-webdriver'
   gem 'poltergeist'
   gem 'capybara-screenshot'
-  gem 'cucumber-rails', '~> 1.5', require: false
+  gem 'cucumber-rails' #, '~> 1.5', require: false
   gem 'gherkin'
   gem 'launchy'    # So you can do Then show me the page
   gem 'delorean'

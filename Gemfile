@@ -22,7 +22,7 @@ gem 'rails-controller-testing'
 
 # Database
 # gem 'sqlite3-ruby', :require => 'sqlite3'
-gem 'mysql2', '0.3.20'
+gem 'mysql2', '0.4.4'
 
 #https://github.com/qertoip/transaction_retry
 gem 'transaction_retry'
@@ -175,7 +175,7 @@ group :development do
 end
 
 group :test, :development, :staging do
-  gem 'bullet', '~> 5.6.0'
+  gem 'bullet', '~> 5.7.0'
 end
 
 # Deploy with Capistrano

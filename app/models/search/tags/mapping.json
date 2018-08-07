@@ -1,0 +1,54 @@
+{
+  "tag": {
+    "properties": {
+      "canonical": {
+        "type": "boolean"
+      },
+      "created_at": {
+        "type": "date"
+      },
+      "id": {
+        "type": "long"
+      },
+      "merger_id": {
+        "type": "long"
+      },
+      "name": {
+        "type": "text",
+        "analyzer": "tag_name_analyzer",
+        "fields": {
+          "exact": {
+            "type": "text",
+            "analyzer": "exact_tag_analyzer"
+          }
+        }
+      },
+      "tag_type": {
+        "type": "keyword"
+      },
+      "sortable_name": {
+        "type": "keyword"
+      },
+      "uses": {
+        "type": "integer"
+      },
+      "parent_ids": {
+        "type": "keyword"
+      },
+      "suggest": {
+        "type": "completion",
+        "contexts": [
+          {
+            "name": "typeContext",
+            "type": "category"
+          },
+          {
+            "name": "parentContext",
+            "type": "category",
+            "path": "parent_ids"
+          }
+        ]
+      }
+    }
+  }
+}

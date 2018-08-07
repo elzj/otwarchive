@@ -1281,6 +1281,26 @@ class Tag < ApplicationRecord
                                        flatten.compact.uniq
   end
 
+  # The versions of the tag to feed to the autocomplete
+  # Limit to the first 20 words so we don't go crazy
+  # Additional tokens for canonical tags allow for matching to
+  # start after the first word, ie "Spock" matching "Kirk/Spock"
+  def suggester_tokens
+    StringTokenizer.tokenize(name)
+  end
+
+  # Weight canonical tags higher than non-canonicals and
+  # then go by usage, using log values for a gentler scale
+  def suggester_weight
+    if !canonical?
+      0
+    elsif taggings_count < 2
+      1
+    else
+      Math.log(taggings_count).ceil
+    end
+  end
+
   # ES UPGRADE TRANSITION #
   # Remove mapping block
   mapping do

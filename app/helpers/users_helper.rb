@@ -3,7 +3,7 @@ module UsersHelper
   def is_author_of?(item)
     if @own_bookmarks && item.is_a?(Bookmark)
       @own_bookmarks.include?(item)
-    elsif @own_works && item.is_a?(Work)
+    elsif @own_works && (item.is_a?(Work) || item.is_a?(WorkBlurb))
       @own_works.include?(item)
     else
       current_user.is_a?(User) && current_user.is_author_of?(item)

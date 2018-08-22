@@ -65,6 +65,20 @@ class Series < ApplicationRecord
     where("creatorships.pseud_id IN (?)", pseuds.collect(&:id))
   }
 
+  # Returns a hash of series data keyed by work id
+  def self.all_for_works(work_ids)
+    series_select = "series.id, title, serial_works.work_id AS work_id, serial_works.position AS position"
+    conditions = {
+      serial_works: {
+        work_id: work_ids
+      }
+    }
+    Series.joins(:serial_works).
+           select(series_select).
+           where(conditions).
+           group_by(&:work_id)
+  end
+
   def posted_works
     self.works.posted
   end

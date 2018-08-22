@@ -479,6 +479,20 @@ class Tag < ApplicationRecord
             end")
   end
 
+  def self.all_for_works(work_ids)
+    tag_select = "tags.id, name, type, taggings.taggable_id AS work_id"
+    conditions = {
+      taggings: {
+        taggable_type: 'Work',
+        taggable_id: work_ids
+      }
+    }
+    Tag.joins(:taggings).
+        where(conditions).
+        select(tag_select).
+        group_by(&:work_id)
+  end
+
   def self.in_tag_set(tag_set)
     if tag_set.is_a?(OwnedTagSet)
       joins(:set_taggings).where("set_taggings.tag_set_id = ?", tag_set.tag_set_id)

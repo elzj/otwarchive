@@ -1,6 +1,12 @@
 <% # expects "work" %>
 <li class="<% if is_author_of?(work) %>own <% end %>work blurb group" id="work_<%= work.id %>" role="article">
-  <%= render 'works/work_module', :work => work %>
+  <% if work.unrevealed? && !is_author_of?(work) %>
+    <%= render 'works/mystery_blurb', item: work, unrevealed: true %>
+  <% elsif work.is_a?(WorkBlurb) %>
+    <%= render 'works/decorated_module', work: work %>
+  <% else %>
+    <%= render 'works/work_module', work: work %>
+  <% end %>
   <% if is_author_of?(work) %>
     <h6 class="landmark heading"><%= ts("Author Actions") %></h6>
   	<ul class="actions" role="navigation">

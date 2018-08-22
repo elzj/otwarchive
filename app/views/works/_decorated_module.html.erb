@@ -1,0 +1,114 @@
+<% # expects "work" %>
+
+<!--title, author, fandom-->
+<div class="header module">
+  <h4 class="heading">
+    <% if (work.unrevealed? || work.anonymous?) && is_author_of?(work) %>
+      <span class="status">
+        <% if work.unrevealed? %>
+          <%= ts("Unrevealed:") %>
+        <% elsif work.anonymous? %>
+          <%= ts("Anonymous:") %>
+        <% end %>
+      </span>
+    <% end %>
+    <%= link_to work.title.html_safe, @collection ? collection_work_path(@collection, work) : work %>
+    <%= ts('by') %>
+    <%= work.creator_links.map { |creator| link_to(creator[:name], creator[:url]) }.to_sentence.html_safe %>
+
+    <% if work.recipients.present? %>
+      <%= ts("for") %> <%= work.recipients %>
+    <% end %>
+    <% if work.restricted? %>
+      <%= image_tag("lockblue.png", size: "15x15", alt: "(Restricted)", title: "Restricted", skip_pipeline: true) %>
+    <% end %>
+    <% if work.hidden_by_admin? %>
+      <%= image_tag("lockred.png", size: "15x15", alt: "(Hidden by Admin)", title: "Hidden by Administrator", skip_pipeline: true) %>
+    <% end %>
+  </h4>
+
+  <h5 class="fandoms heading">
+    <span class="landmark"><%= ts("Fandoms") %>:</span>
+    <%= work.fandom_links.map{ |tag| link_to tag[:name], tag[:url] }.join(', ').html_safe %>
+    &nbsp;
+  </h5>
+
+  <!--required tags-->
+  <%= get_symbols_for(work, work.tag_groups) %>
+  <p class="datetime"><%= set_format_for_date(work.revised_at) %></p>
+</div>
+
+<% if !work.posted? %>
+ <p class="caution notice"><%= ts('This draft will be <strong>automatically deleted</strong> on %{time}', time: time_in_zone(work.created_at + 1.month)).html_safe %></p>
+<% end %>
+<!--warnings again, cast, freeform tags-->
+<h6 class="landmark heading"><%= ts("Tags") %></h6>
+<ul class="tags commas">
+  <%= blurb_tag_block(work, work.tag_groups) %>
+</ul>
+
+<!--summary-->
+<% unless work.summary.blank? %>
+  <h6 class="landmark heading"><%= ts("Summary") %></h6>
+  <blockquote class="userstuff summary">
+    <%=raw strip_images(sanitize_field(work, :summary)) %>
+  </blockquote>
+<% end %>
+
+<% unless work.series_links.empty? %>
+  <h6 class="landmark heading"><%= ts("Series") %></h6>
+  <ul class="series">
+    <% work.series_links.each do |series| %>
+      <li>
+        <%= "Part #{series[:position]} of #{link_to series[:title], series[:url]}".html_safe %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+
+<!--stats-->
+
+<dl class="stats">
+  <dt class="language"><%= ts("Language") %>:</dt>
+  <dd class="language"><%= work.language_name %></dd>
+  <dt class="words"><%= ts('Words') %>:</dt>
+  <dd class="words"><%= number_with_delimiter(work.word_count) %></dd>
+  <dt class="chapters"><%= ts('Chapters') %>:</dt>
+  <dd class="chapters"><%= work.chapter_total_display %></dd>
+
+<% unless work.collection_count == 0 %>
+  <dt class="collections"><%= ts('Collections') %>:</dt>
+  <dd class="collections"><%= link_to work.collection_count, work_collections_path(work) %></dd>
+<% end %>
+
+<% if work.comments_count > 0 %>
+  <dt class="comments"><%= ts('Comments') %>:</dt>
+  <dd class="comments">
+    <%= link_to work.comments_count, work_path(
+          work,
+          anchor: "comments",
+          show_comments: true,
+          view_full_work: "true") %>
+  </dd>
+<% end %>
+<% if work.kudos_count > 0 %>
+  <dt class="kudos"><%= ts('Kudos') %>:</dt>
+  <dd class="kudos">
+    <%= link_to work.kudos_count, work_path(
+          work,
+          anchor: "comments",
+          view_full_work: "true") %>
+  </dd>
+<% end %>
+<% if work.bookmarks_count > 0 %>
+  <dt class="bookmarks"><%= ts('Bookmarks') %>:</dt>
+  <dd class="bookmarks">
+    <%= link_to_bookmarkable_bookmarks(work, work.bookmarks_count) %>
+  </dd>
+<% end %>
+
+<% if work.show_hit_count? %>
+  <dt class="hits"><%= ts("Hits") %>:</dt>
+  <dd class="hits"><%= work.hits %></dd>
+<% end %>
+</dl>

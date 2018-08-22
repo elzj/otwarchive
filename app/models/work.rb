@@ -1629,4 +1629,8 @@ class Work < ApplicationRecord
     nonfiction_tags = [125773, 66586, 123921, 747397] # Essays, Nonfiction, Reviews, Reference
     (filter_ids & nonfiction_tags).present?
   end
+
+  def self.load_from_elasticsearch(hits)
+    WorkList.new(hits).blurbs
+  end
 end

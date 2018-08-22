@@ -145,7 +145,7 @@ class Pseud < ApplicationRecord
 
   # For use with the work and chapter forms
   def user_name
-     self.user.login
+    @user_name ||= user && user.login
   end
 
   def to_param
@@ -218,6 +218,23 @@ class Pseud < ApplicationRecord
     end
   end
 
+  # Given a list of work ids, return a hash of pseuds keyed by the work ids
+  # Returns name, user_name, and work_id for each pseud
+  def self.all_for_works(work_ids)
+    pseud_select = "name, creatorships.creation_id AS work_id, users.login AS u_name"
+    conditions = {
+      creatorships: {
+        creation_type: 'Work',
+        creation_id: work_ids
+      }
+    }
+    Pseud.joins(:creatorships).
+          joins(:user).
+          select(pseud_select).
+          where(conditions).
+          group_by(&:work_id)
+  end
+
   def unposted_works
     @unposted_works = self.works.where(posted: false).order(created_at: :desc)
   end
@@ -234,7 +251,8 @@ class Pseud < ApplicationRecord
 
   # Produces a byline that indicates the user's name if pseud is not unique
   def byline
-    (name != user_name) ? name + " (" + user_name + ")" : name
+    login = self.respond_to?(:u_name) ? u_name : user_name
+    name == login ? name : "#{name} (#{login})"
   end
 
   # get the former byline

@@ -38,8 +38,10 @@ RSpec.configure do |config|
   config.include EmailSpec::Matchers
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include Capybara::DSL
+  config.include TaskExampleGroup, type: :task
 
   config.before :suite do
+    Rails.application.load_tasks
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean
   end
@@ -48,12 +50,6 @@ RSpec.configure do |config|
     DatabaseCleaner.start
     User.current_user = nil
     clean_the_database
-
-    # ES UPGRADE TRANSITION #
-    # Remove $rollout activations
-    $rollout.activate :start_new_indexing
-    $rollout.activate :stop_old_indexing
-    $rollout.activate :use_new_search
   end
 
   config.after :each do
@@ -71,7 +67,10 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
+  # For email veracity checks
   BAD_EMAILS = ['Abc.example.com', 'A@b@c@example.com', 'a\"b(c)d,e:f;g<h>i[j\k]l@example.com', 'this is"not\allowed@example.com', 'this\ still\"not/\/\allowed@example.com', 'nodomain', 'foo@oops'].freeze
+  # For email format checks
+  BADLY_FORMATTED_EMAILS = ['ast*risk@example.com', 'asterisk@ex*ample.com'].freeze
   INVALID_URLS = ['no_scheme.com', 'ftp://ftp.address.com', 'http://www.b@d!35.com', 'https://www.b@d!35.com', 'http://b@d!35.com', 'https://www.b@d!35.com'].freeze
   VALID_URLS = ['http://rocksalt-recs.livejournal.com/196316.html', 'https://rocksalt-recs.livejournal.com/196316.html'].freeze
   INACTIVE_URLS = ['https://www.iaminactive.com', 'http://www.iaminactive.com', 'https://iaminactive.com', 'http://iaminactive.com'].freeze
@@ -86,10 +85,15 @@ RSpec.configure do |config|
   #       # Equivalent to being in spec/controllers
   #     end
   config.infer_spec_type_from_file_location!
+  config.define_derived_metadata(file_path: %r{/spec/miscellaneous/lib/tasks/}) do |metadata|
+    metadata[:type] = :task
+  end
 
   # Set default formatter to print out the description of each test as it runs
   config.color = true
   config.formatter = :documentation
+
+  config.file_fixture_path = "spec/support/fixtures"
 end
 
 def clean_the_database
@@ -107,8 +111,6 @@ def clean_the_database
   end
 end
 
-# ES UPGRADE TRANSITION #
-# Replace all instances of $new_elasticsearch with $elasticsearch
 def update_and_refresh_indexes(klass_name, shards = 5)
   indexer_class = "#{klass_name.capitalize.constantize}Indexer".constantize
 
@@ -130,11 +132,11 @@ def update_and_refresh_indexes(klass_name, shards = 5)
   indexer = indexer_class.new(klass_name.capitalize.constantize.all.pluck(:id))
   indexer.index_documents if klass_name.capitalize.constantize.any?
 
-  $new_elasticsearch.indices.refresh(index: "ao3_test_#{klass_name}s")
+  $elasticsearch.indices.refresh(index: "ao3_test_#{klass_name}s")
 end
 
 def refresh_index_without_updating(klass_name)
-  $new_elasticsearch.indices.refresh(index: "ao3_test_#{klass_name}s")
+  $elasticsearch.indices.refresh(index: "ao3_test_#{klass_name}s")
 end
 
 def run_all_indexing_jobs
@@ -148,15 +150,15 @@ end
 
 def delete_index(index)
   index_name = "ao3_test_#{index}s"
-  if $new_elasticsearch.indices.exists? index: index_name
-    $new_elasticsearch.indices.delete index: index_name
+  if $elasticsearch.indices.exists? index: index_name
+    $elasticsearch.indices.delete index: index_name
   end
 end
 
 def delete_test_indices
-  indices = $new_elasticsearch.indices.get_mapping.keys.select { |key| key.match("test") }
+  indices = $elasticsearch.indices.get_mapping.keys.select { |key| key.match("test") }
   indices.each do |index|
-    $new_elasticsearch.indices.delete(index: index)
+    $elasticsearch.indices.delete(index: index)
   end
 end
 

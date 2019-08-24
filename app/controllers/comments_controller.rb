@@ -10,6 +10,11 @@ class CommentsController < ApplicationController
   before_action :check_visibility, only: [:show]
   before_action :check_if_restricted
   before_action :check_tag_wrangler_access
+  before_action :check_parent
+  before_action :check_modify_parent,
+                only: [:new, :create, :edit, :update, :add_comment,
+                       :add_comment_reply, :cancel_comment_reply,
+                       :cancel_comment_edit, :cancel_comment]
   before_action :check_pseud_ownership, only: [:create, :update]
   before_action :check_ownership, only: [:edit, :update, :cancel_comment_edit]
   before_action :check_permission_to_edit, only: [:edit, :update ]
@@ -38,9 +43,37 @@ class CommentsController < ApplicationController
     @check_visibility_of = @comment
   end
 
+  def check_parent
+    parent = find_parent
+    # Only admins and the owner can see comments on something hidden by an admin.
+    if parent.respond_to?(:hidden_by_admin) && parent.hidden_by_admin
+      logged_in_as_admin? || current_user_owns?(parent) || access_denied(redirect: root_path)
+    end
+    # Only admins and the owner can see comments on unrevealed works.
+    if parent.respond_to?(:in_unrevealed_collection) && parent.in_unrevealed_collection
+      logged_in_as_admin? || current_user_owns?(parent) || access_denied(redirect: root_path)
+    end
+  end
+
+  def check_modify_parent
+    parent = find_parent
+    # No one can create or update comments on something hidden by an admin.
+    if parent.respond_to?(:hidden_by_admin) && parent.hidden_by_admin
+      flash[:error] = ts("Sorry, you can't add or edit comments on a hidden work.")
+      redirect_to work_path(parent)
+    end
+    # No one can create or update comments on unrevealed works.
+    if parent.respond_to?(:in_unrevealed_collection) && parent.in_unrevealed_collection
+      flash[:error] = ts("Sorry, you can't add or edit comments on an unrevealed work.")
+      redirect_to work_path(parent)
+    end
+  end
+
   def find_parent
     if @comment.present?
       @comment.ultimate_parent
+    elsif @commentable.is_a?(Comment)
+      @commentable.ultimate_parent
     elsif @commentable.present? && @commentable.respond_to?(:work)
       @commentable.work
     else
@@ -543,7 +576,7 @@ class CommentsController < ApplicationController
 
   def comment_params
     params.require(:comment).permit(
-      :pseud_id, :content, :name, :email, :edited_at
+      :pseud_id, :comment_content, :name, :email, :edited_at
     )
   end
 

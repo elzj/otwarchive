@@ -134,8 +134,8 @@ Given /^the tag wrangler "([^\"]*)" with password "([^\"]*)" is wrangler of "([^
   visit new_user_session_path
   user_record = find_or_create_new_user(user, password)
 
-  fill_in "User name", with: user
-  fill_in "Password", with: password
+  fill_in "User name or email:", with: user
+  fill_in "Password:", with: password
   check "Remember Me"
   click_button "Log In"
 
@@ -363,6 +363,10 @@ When /^I remove the metatag "([^"]*)" from "([^"]*)"$/ do |metatag, subtag|
   visit edit_tag_path(subtag)
   check("parent_MetaTag_associations_to_remove_#{metatag_id}")
   click_button("Save changes")
+end
+
+When /^I view the (canonical|synonymous|unfilterable|unwrangled|unwrangleable) (character|relationship|freeform) bin for "(.*?)"$/ do |status, type, tag|
+  visit wrangle_tag_path(Tag.find_by(name: tag), show: type.pluralize, status: status)
 end
 
 ### THEN

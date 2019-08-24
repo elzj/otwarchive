@@ -35,8 +35,7 @@ Given /the following users exist with BCrypt encrypted passwords/ do |table|
     # same as
     encrypted_password = BCrypt::Password.create(
                            [hash[:password], salt].flatten.join,
-                           cost: ArchiveConfig.BCRYPT_COST || 14
-                         )
+                           cost: ArchiveConfig.BCRYPT_COST || 14)
 
     user.update(
       password_salt: salt,
@@ -111,8 +110,8 @@ Given /^I am logged in as "([^"]*)" with password "([^"]*)"(?:( with preferences
   step %{I am on the homepage}
   find_link('login-dropdown').click
 
-  fill_in "User name", with: login
-  fill_in "Password", with: password
+  fill_in "User name or email:", with: login
+  fill_in "Password:", with: password
   check "Remember Me"
   click_button "Log In"
   step %{confirmation emails have been delivered}
@@ -172,8 +171,11 @@ end
 Given(/^I coauthored the work "(.*?)" as "(.*?)" with "(.*?)"$/) do |title, login, coauthor|
   step %{basic tags}
   author1 = User.find_by(login: login).default_pseud
+  author1.user.preference.update(allow_cocreator: true)
   author2 = User.find_by(login: coauthor).default_pseud
-  FactoryGirl.create(:work, authors: [author1, author2], posted: true, title: title)
+  author2.user.preference.update(allow_cocreator: true)
+  work = FactoryGirl.create(:work, authors: [author1, author2], posted: true, title: title)
+  work.creatorships.unapproved.each(&:accept!)
 end
 
 # WHEN
@@ -182,11 +184,6 @@ When /^I follow the link for "([^"]*)" first invite$/ do |login|
   user = User.find_by(login: login)
   invite = user.invitations.first
   step(%{I follow "#{invite.token}"})
-end
-
-When /^the password reset token for "([^*"]*)" is expired$/ do |login|
-  password_generated_date = 2.weeks.ago
-  expect_any_instance_of(User).to receive(:updated_at).at_least(:once).and_return(password_generated_date)
 end
 
 When /^the user "([^\"]*)" has failed to log in (\d+) times$/ do |login, count|
@@ -199,11 +196,6 @@ When /^"([^\"]*)" creates the default pseud "([^"]*)"$/ do |username, newpseud|
   fill_in "Name", with: newpseud
   check("pseud_is_default")
   click_button "Create"
-end
-
-When /^I fill in "([^"]*)"'s temporary password$/ do |login|
-  user = User.find_by(login: login)
-  fill_in "Password", with: user.reset_password_token
 end
 
 When /^"([^"]*)" creates the pseud "([^"]*)"$/ do |username, newpseud|
@@ -240,6 +232,13 @@ end
 When /^I visit the change username page for (.*)$/ do |login|
   user = User.find_by(login: login)
   visit change_username_user_path(user)
+end
+
+When /^the user "(.*?)" accepts all (?:co-)?creator (?:invitations|invites)$/ do |login|
+  # To make sure that we don't have caching issues with the byline:
+  step %{I wait 1 second}
+  user = User.find_by(login: login)
+  user.creatorships.unapproved.each(&:accept!)
 end
 
 # THEN

@@ -24,6 +24,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       resource.transaction do
         # skip sending the Devise confirmation notification
         resource.skip_confirmation_notification!
+        resource.invitation_token = params[:invitation_token]
         if resource.save
           notify_and_show_confirmation_screen
         else
@@ -80,7 +81,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if !invitation
         flash[:error] = ts('There was an error with your invitation token, please contact support')
         redirect_to new_feedback_report_path
-      elsif invitation.redeemed_at && invitation.invitee
+      elsif invitation.redeemed_at
         flash[:error] = ts('This invitation has already been used to create an account, sorry!')
         redirect_to root_path
       end
@@ -96,5 +97,4 @@ class Users::RegistrationsController < Devise::RegistrationsController
       redirect_to invite_requests_path
     end
   end
-
 end

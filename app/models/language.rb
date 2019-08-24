@@ -20,12 +20,6 @@ class Language < ApplicationRecord
     self.find_or_create_by(short: ArchiveConfig.DEFAULT_LANGUAGE_SHORT, name: ArchiveConfig.DEFAULT_LANGUAGE_NAME)
   end
 
-  def self.for_posting
-    Rails.cache.fetch("posting_languages") {
-      all.pluck(:name, :id)
-    }
-  end
-
   def work_count
     self.works.where(posted: true).count
   end
@@ -34,7 +28,4 @@ class Language < ApplicationRecord
     Fandom.joins(:works).where(works: {id: self.works.posted.collect(&:id)}).distinct.select('tags.id').count
   end
 
-  def expire_cache
-    Rails.cache.delete("posting_languages")
-  end
 end

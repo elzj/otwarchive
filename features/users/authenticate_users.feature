@@ -79,59 +79,6 @@ Feature: User Authentication
       And I fill in "Password:" with "new<pass"
       And I press "Log In"
     Then I should see "Hi, sam"
-      And I should see "You used a temporary password to log in."
-      And I should see "Change My Password"
-
-  Scenario: With expired password token
-    Given I have no users
-      And the following activated user exists
-        | login | password |
-        | sam   | password |
-      And all emails have been delivered
-    When I am on the login page
-      And I follow "Reset password"
-      And I fill in "reset_password_for" with "sam"
-      And I press "Reset Password"
-    Then 1 email should be delivered
-    When I am logged out
-      And the password reset token for "sam" is expired
-    When I fill in "User name" with "sam"
-      And I fill in "sam"'s temporary password
-      And I press "Log In"
-    Then I should see "The password you entered has expired."
-      And I should not see "Hi, sam!"
-      And I should see "Log In"
-
-  Scenario: User is locked out
-    Given I have no users
-      And the following activated user exists
-        | login | password |
-        | sam   | password |
-      And all emails have been delivered
-      And the user "sam" has failed to log in 50 times
-      When I am on the home page
-        And I fill in "User name" with "sam"
-        And I fill in "Password" with "badpassword"
-        And I press "Log In"
-      Then I should see "Your account has been locked for 5 minutes"
-        And I should not see "Hi, sam!"
-
-      # User should not be able to log back in even with correct password
-      When I am on the home page
-        And I fill in "User name" with "sam"
-        And I fill in "Password" with "password"
-        And I press "Log In"
-      Then I should see "Your account has been locked for 5 minutes"
-        And I should not see "Hi, sam!"
-
-      # User should be able to log in with the correct password 5 minutes later
-      When 5 minutes have passed
-        And I am on the home page
-        And I fill in "User name" with "sam"
-        And I fill in "Password" with "password"
-        And I press "Log In"
-      Then I should see "Successfully logged in."
-        And I should see "Hi, sam!"
 
     # password entered the second time should not work
     When I am logged out

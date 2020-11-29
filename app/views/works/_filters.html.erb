@@ -180,11 +180,3 @@
   </p>
 
 <% end %>
-
-<%= content_for :footer_js do %>
-  <%= javascript_tag do %>
-    $j(".datepicker").datepicker({
-      dateFormat: "yy-mm-dd"
-    });
-  <% end %>
-<% end %>

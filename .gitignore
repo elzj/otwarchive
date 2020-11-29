@@ -75,3 +75,10 @@ coverage
 redis-cucumber-dump.rdb
 
 .rspec
+
+/public/packs
+/public/packs-test
+/node_modules
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity

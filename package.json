@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "@rails/webpacker": "5.2.1",
+    "bootstrap": "^4.5.3",
+    "jquery": "^3.5.1",
+    "jquery-datepicker": "^1.12.3",
+    "jquery-tokeninput": "^1.6.0",
+    "jquery.scrollto": "^2.1.2",
+    "js-cookie": "^2.2.1",
+    "popper": "^1.0.1"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^3.11.0"
+  }
+}

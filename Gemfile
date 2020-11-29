@@ -178,3 +178,5 @@ gem 'rvm-capistrano'
 gem 'unicorn', '~> 5.5', require: false
 # Use god as the monitor
 gem 'god', '~> 0.13.7'
+
+gem "webpacker", "~> 5.2"

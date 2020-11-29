@@ -3,11 +3,6 @@
 
 //things to do when the page loads
 $j(document).ready(function() {
-    setupToggled();
-    if ($j('#work-form')) { hideFormFields(); };
-    hideHideMe();
-    showShowMe();
-    handlePopUps();
     attachCharacterCounters();
     setupAccordion();
     setupDropdown();
@@ -184,71 +179,6 @@ jQuery(function($){
   });
 });
 
-// Set up open and close toggles for a given object
-// Typical setup (this will leave the toggled item open for users without javascript but hide the controls from them):
-// <a class="foo_open hidden">Open Foo</a>
-// <div id="foo" class="toggled">
-//   foo!
-//   <a class="foo_close hidden">Close</a>
-// </div>
-//
-// Notes:
-// - The open button CANNOT be inside the toggled div, the close button can be (but doesn't have to be)
-// - You can have multiple open and close buttons for the same div since those are labeled with classes
-// - You don't have to use div and a, those are just examples. Anything you put the toggled and _open/_close classes on will work.
-// - If you want the toggled item not to be visible to users without JavaScript by default, add the class "hidden" to the toggled item as well.
-//   (and you can then add an alternative link for them using <noscript>)
-// - Generally reserved for toggling complex elements like bookmark forms and challenge sign-ups; for simple elements like lists use setupAccordion.
-function setupToggled(){
-  $j('.toggled').each(function(){
-    var node = $j(this);
-    var open_toggles = $j('.' + node.attr('id') + "_open");
-    var close_toggles = $j('.' + node.attr('id') + "_close");
-
-    if (node.hasClass('open')) {
-      close_toggles.each(function(){$j(this).show();});
-      open_toggles.each(function(){$j(this).hide();});
-    } else {
-      node.hide();
-      close_toggles.each(function(){$j(this).hide();});
-      open_toggles.each(function(){$j(this).show();});
-    }
-
-    open_toggles.each(function(){
-      $j(this).click(function(e){
-        if ($j(this).attr('href') == '#') {e.preventDefault();}
-        node.show();
-        open_toggles.each(function(){$j(this).hide();});
-        close_toggles.each(function(){$j(this).show();});
-      });
-    });
-
-    close_toggles.each(function(){
-      $j(this).click(function(e){
-        if ($j(this).attr('href') == '#') {e.preventDefault();}
-        node.hide();
-        close_toggles.each(function(){$j(this).hide();});
-        open_toggles.each(function(){$j(this).show();});
-      });
-    });
-  });
-}
-
-function hideHideMe() {
-    $j('.hideme').each(function() { $j(this).hide(); });
-}
-
-function showShowMe() {
-    $j('.showme').each(function() { $j(this).show(); });
-}
-
-function handlePopUps() {
-    $j("a[data_popup]").click(function(event, element) {
-      if (event.stopped) return;
-      window.open($j(element).attr('href'));
-      event.stop();
-    });
-}
 
 // used in nested form fields for deleting a nested resource
 // see prompt form for example
@@ -274,43 +204,6 @@ function add_section(link, nested_model_name, content) {
     // kludgy: show the hidden remove_section link (we don't want it showing for non-js users)
     content = content.replace('class="hidden showme"', '');
     $j(link).parent().before(content);
-}
-
-// An attempt to replace the various work form toggle methods with a more generic one
-function toggleFormField(element_id) {
-    var ticky = $j('#' + element_id + '-show');
-    if (ticky.is(':checked')) {
-      $j('#' + element_id).removeClass('hidden');
-    }
-    else {
-        $j('#' + element_id).addClass('hidden');
-        if (element_id != 'chapters-options' && element_id != 'backdate-options') {
-            $j('#' + element_id).find(':input[type!="hidden"]').each(function(index, d) {
-                if ($j(d).attr('type') == "checkbox") {$j(d).attr('checked', false);}
-                else {$j(d).val('');}
-            });
-        }
-    }
-    // We want to check this whether the ticky is checked or not
-    if (element_id == 'chapters-options') {
-        var item = document.getElementById('work_wip_length');
-        if (item.value == 1 || item.value == '1') {item.value = '?';}
-        else {item.value = 1;}
-    }
-}
-
-// Hides expandable form field options if Javascript is enabled
-function hideFormFields() {
-    if ($j('#work-form') != null) {
-        var toHide = ['#co-authors-options', '#front-notes-options', '#end-notes-options', '#chapters-options',
-          '#parent-options', '#series-options', '#backdate-options', '#override_tags-options'];
-        $j.each(toHide, function(index, name) {
-            if ($j(name)) {
-                if (!($j(name + '-show').is(':checked'))) { $j(name).addClass('hidden'); }
-            }
-        });
-        $j('#work-form').className = $j('#work-form').className;
-    }
 }
 
 // Hides the extra checkbox fields in prompt form

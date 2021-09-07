@@ -243,7 +243,7 @@ class Tag < ApplicationRecord
   end
   def update_wrangler(tag)
     unless User.current_user.nil?
-      self.update_attributes(last_wrangler: User.current_user)
+      self.update(last_wrangler: User.current_user)
     end
   end
 
@@ -1022,7 +1022,7 @@ class Tag < ApplicationRecord
     names.each do |name|
       syn = Tag.find_by_name(name)
       if syn && !syn.canonical?
-        syn.update_attributes(merger_id: self.id)
+        syn.update(merger_id: self.id)
       end
     end
   end

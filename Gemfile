@@ -50,13 +50,9 @@ gem 'akismetor'
 gem 'httparty'
 gem 'htmlentities'
 gem 'whenever', '~>0.6.2', require: false
-gem 'nokogiri', '>= 1.8.5'
+gem 'nokogiri', '~> 1.12.0'
 gem 'mechanize'
-gem 'sanitize', '>= 4.6.5'
-# Until there is a working solution to
-# https://otwarchive.atlassian.net/browse/AO3-4957
-# https://github.com/rubys/nokogumbo/issues/50
-gem 'nokogumbo', '1.4.9'
+gem 'sanitize', '~>6.0.0'
 gem "rest-client", "~> 2.1.0", require: "rest_client"
 gem 'resque', '>=1.14.0'
 gem 'resque-scheduler'

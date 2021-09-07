@@ -328,8 +328,6 @@ GEM
     nokogiri (1.12.4)
       mini_portile2 (~> 2.6.1)
       racc (~> 1.4)
-    nokogumbo (1.4.9)
-      nokogiri
     ntlm-http (0.1.1)
     orm_adapter (0.5.0)
     parallel (1.20.1)
@@ -466,10 +464,9 @@ GEM
     rvm-capistrano (1.5.6)
       capistrano (~> 2.15.4)
     safe_yaml (1.0.5)
-    sanitize (4.6.6)
+    sanitize (6.0.0)
       crass (~> 1.0.2)
-      nokogiri (>= 1.4.4)
-      nokogumbo (~> 1.4)
+      nokogiri (>= 1.12.0)
     shoulda (4.0.0)
       shoulda-context (~> 2.0)
       shoulda-matchers (~> 4.0)
@@ -603,8 +600,7 @@ DEPENDENCIES
   minitest
   mysql2 (= 0.5.2)
   newrelic_rpm
-  nokogiri (>= 1.8.5)
-  nokogumbo (= 1.4.9)
+  nokogiri (~> 1.12.0)
   permit_yo
   phraseapp-in-context-editor-ruby (>= 1.0.6)
   pickle
@@ -628,7 +624,7 @@ DEPENDENCIES
   rubocop-rails (= 2.6.0)
   rubocop-rspec (= 1.41.0)
   rvm-capistrano
-  sanitize (>= 4.6.5)
+  sanitize (~> 6.0.0)
   shoulda
   simplecov
   sprockets (< 4)

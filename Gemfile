@@ -6,7 +6,7 @@ gem 'test-unit', '~> 3.2'
 
 gem 'bundler'
 
-gem "rails", "~> 5.2"
+gem "rails", "~> 6.0.4"
 gem "rack", "~> 2.1", ">= 2.1.4"
 gem "sprockets", "< 4"
 
@@ -129,8 +129,7 @@ gem 'dalli'
 gem 'kgio', '2.10.0'
 
 group :test do
-  gem 'rspec', '~> 3.8'
-  gem 'rspec-rails', '~> 3.8.2'
+  gem 'rspec-rails', '~> 4.0.1'
   gem 'pickle'
   gem 'shoulda'
   gem 'capybara', '~> 2.16.1'

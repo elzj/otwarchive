@@ -1,9 +1,10 @@
 class Language < ApplicationRecord
   include ActiveModel::ForbiddenAttributesProtection
 
-  validates_presence_of :short
-  validates_uniqueness_of :short
-  validates_presence_of :name
+  validates :short,
+    presence: true,
+    uniqueness: { case_sensitive: false }
+  validates :name, presence: true
 
   has_many :works
   has_many :locales

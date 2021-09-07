@@ -13,24 +13,28 @@ class Comment < ApplicationRecord
   has_many :thread_comments, class_name: 'Comment', foreign_key: :thread
 
   validates_presence_of :name, unless: :pseud_id
-  validates :email, email_veracity: {on: :create, unless: :pseud_id}, email_blacklist: {on: :create, unless: :pseud_id}
+  validates :email,
+    email_veracity: { on: :create, unless: :pseud_id },
+    email_blacklist: { on: :create, unless: :pseud_id }
 
-  validates_presence_of :comment_content
-  validates_length_of :comment_content,
-    maximum: ArchiveConfig.COMMENT_MAX,
-    too_long: ts("must be less than %{count} characters long.", count: ArchiveConfig.COMMENT_MAX)
+  validates :comment_content,
+    presence: true,
+    uniqueness: {
+      scope: [:commentable_id, :commentable_type, :name, :email, :pseud_id],
+      unless: :is_deleted?,
+      message: ts("^This comment has already been left on this work. (It may not appear right away for performance reasons.)"),
+      case_sensitive: false
+    },
+    length: {
+      maximum: ArchiveConfig.COMMENT_MAX,
+      too_long: ts("must be less than %{count} characters long.", count: ArchiveConfig.COMMENT_MAX)
+    }
 
   validate :check_for_spam, on: :create
 
   def check_for_spam
     errors.add(:base, ts("This comment looks like spam to our system, sorry! Please try again, or create an account to comment.")) unless check_for_spam?
   end
-
-  validates :comment_content, uniqueness: {
-    scope: [:commentable_id, :commentable_type, :name, :email, :pseud_id],
-    unless: :is_deleted?,
-    message: ts("^This comment has already been left on this work. (It may not appear right away for performance reasons.)")
-  }
 
   scope :ordered_by_date, -> { order('created_at DESC') }
   scope :top_level,       -> { where.not(commentable_type: "Comment") }

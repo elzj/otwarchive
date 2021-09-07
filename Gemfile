@@ -128,12 +128,11 @@ group :test do
   gem 'rspec-rails', '~> 4.0.1'
   gem 'pickle'
   gem 'shoulda'
-  gem 'capybara', '~> 2.16.1'
-  gem 'cucumber', '~> 3.1'
+  gem 'capybara', '~> 2.18.0', require: false
   gem 'database_cleaner'
   gem 'poltergeist'
   gem 'capybara-screenshot'
-  gem 'cucumber-rails', require: false
+  gem 'cucumber-rails', '~> 2.4.0'
   gem 'launchy'    # So you can do Then show me the page
   gem 'delorean'
   gem "faker"

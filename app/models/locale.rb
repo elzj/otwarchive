@@ -4,7 +4,7 @@ class Locale < ApplicationRecord
   belongs_to :language
   validates :iso,
     presence: true,
-    case_sensitive: false
+    uniqueness: { case_sensitive: false }
   validates :name, presence: true
 
   scope :default_order, -> { order(:iso) }

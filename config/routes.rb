@@ -485,6 +485,40 @@ Otwarchive::Application.routes.draw do
     end
   end
 
+  #### AUTOCOMPLETE ####
+
+  namespace :autocomplete do
+    resources :admin_posts, only: [:index] do
+      collection { get :tags }
+    end
+    resources :challenge_participants, only: [:index]
+    resources :collections, only: [:index] do
+      collection do
+        get :open
+        get :parent_name
+      end
+    end
+    resources :external_works, only: [:index]
+    resources :potential_matches, only: [:index] do
+      collection do
+        get :offers
+        get :requests
+      end
+    end
+    resources :pseuds, only: [:index]
+    resources :site_skins, only: [:index]
+    resources :tag_sets, only: [:index]
+    resources :tags, only: [:index] do
+      collection do
+        get :in_fandom
+        get :in_sets
+        get :associated
+        get :noncanonical
+        get :nominated_parents
+      end
+    end
+  end
+
   #### MISC ####
 
   resources :comments do
@@ -617,10 +651,6 @@ Otwarchive::Application.routes.draw do
   patch '/admin/skins/update' => 'admin_skins#update', as: :update_admin_skin
 
   get "/admin/admin_users/troubleshoot/:id" => "admin/admin_users#troubleshoot", as: :troubleshoot_admin_user
-
-  # TODO: rewrite the autocomplete controller to deal with the fact that
-  # there are fifty different actions going on in there
-  get '/autocomplete/:action' => 'autocomplete#%{action}'
 
   get '/challenges/no_collection' => 'challenges#no_collection'
   get '/challenges/no_challenge' => 'challenges#no_challenge'

@@ -4,9 +4,9 @@
     <dt class="required"><%= ew.label :url, ts("URL") + "*" %></dt>
     <dd class="required" title="URL">
       <% if params[:url_from_external].present? %>
-        <%= ew.text_field :url, autocomplete_options("external_work", data: { autocomplete_token_limit: 1 }, value: params[:url_from_external]) %>
+        <%= ew.text_field :url, autocomplete_options("external_works", data: { autocomplete_token_limit: 1 }, value: params[:url_from_external]) %>
       <% else %>
-        <%= ew.text_field :url, autocomplete_options("external_work", data: { autocomplete_token_limit: 1 }) %>
+        <%= ew.text_field :url, autocomplete_options("external_works", data: { autocomplete_token_limit: 1 }) %>
       <% end %>
       <%= hidden_field "fetched", "", id: "fetched" %>
       <%= content_for :footer_js do %>

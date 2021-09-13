@@ -67,14 +67,14 @@
               <%= f.label field_name, ts("Other work tags to %{filter_action}", filter_action: filter_action) %>
             </dt>
             <dd class="autocomplete search">
-              <%= f.text_field field_name, autocomplete_options("tag") %>
+              <%= f.text_field field_name, autocomplete_options("tags") %>
             </dd>
             <% field_name = filter_action == "include" ? "other_bookmark_tag_names" : "excluded_bookmark_tag_names" %>
             <dt class="bookmarker autocomplete search">
               <%= f.label field_name, ts("Other bookmarker's tags to %{filter_action}", filter_action: filter_action) %>
             </dt>
             <dd class="bookmarker autocomplete search">
-              <%= f.text_field field_name, autocomplete_options("tag") %>
+              <%= f.text_field field_name, autocomplete_options("tags") %>
             </dd>
           </dl>
         </dd>

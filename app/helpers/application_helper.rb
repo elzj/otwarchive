@@ -293,21 +293,6 @@ module ApplicationHelper
     (shuffle ? ('<span class="action shuffle hidden" title="shuffle" action_target="#' + list_id + '"><a href="#" role="button">&#8646;</a></span>') : '').html_safe
   end
 
-  # returns the default autocomplete attributes, all of which can be overridden
-  # note: we do this and put the message defaults here so we can use translation on them
-  def autocomplete_options(method, options={})
-    {
-      class: "autocomplete",
-      data: {
-        autocomplete_method: (method.is_a?(Array) ? method.to_json : "/autocomplete/#{method}"),
-        autocomplete_hint_text: ts("Start typing for suggestions!"),
-        autocomplete_no_results_text: ts("(No suggestions found)"),
-        autocomplete_min_chars: 1,
-        autocomplete_searching_text: ts("Searching...")
-      }
-    }.deep_merge(options)
-  end
-
   # see http://asciicasts.com/episodes/197-nested-model-form-part-2
   def link_to_add_section(linktext, form, nested_model_name, partial_to_render, locals = {})
     new_nested_model = form.object.class.reflect_on_association(nested_model_name).klass.new

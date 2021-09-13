@@ -6,7 +6,7 @@ gem 'test-unit', '~> 3.2'
 
 gem 'bundler'
 
-gem "rails", "~> 6.0.4"
+gem "rails", "~> 6.1.4"
 gem "rack", "~> 2.1", ">= 2.1.4"
 gem "sprockets", "< 4"
 
@@ -24,7 +24,7 @@ gem 'mysql2', '0.5.2'
 gem 'transaction_isolation', '1.0.5'
 gem 'transaction_retry'
 #https://github.com/winebarrel/activerecord-mysql-reconnect
-gem 'activerecord-mysql-reconnect', '~> 0.4.1'
+gem 'activerecord-mysql-reconnect', '~> 0.5.0'
 
 gem 'rack-attack'
 
@@ -110,7 +110,7 @@ gem 'phraseapp-in-context-editor-ruby', '>=1.0.6'
 
 # For URL mangling
 gem 'addressable'
-gem 'audited', '~> 4.4'
+gem "audited", "~> 5.0"
 
 # For controlling application behavour dynamically
 gem 'rollout'
@@ -171,7 +171,7 @@ group :linters do
 end
 
 group :test, :development, :staging do
-  gem 'bullet', '>= 5.7.3'
+  gem 'bullet', '~> 6.1'
 end
 
 # Deploy with Capistrano

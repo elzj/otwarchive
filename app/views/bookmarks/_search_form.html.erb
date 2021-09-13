@@ -16,7 +16,7 @@
         <%= link_to_help "bookmark-search-work-tag" %>
       </dt>
       <dd>
-        <%= f.text_field :other_tag_names, autocomplete_options("tag") %>
+        <%= f.text_field :other_tag_names, autocomplete_options("tags") %>
       </dd>
       <dt>
         <%= f.label :bookmarkable_type, ts("Type") %>
@@ -59,7 +59,7 @@
         <%= link_to_help "bookmark-search-bookmarker-tag" %>
       </dt>
       <dd>
-        <%= f.text_field :other_bookmark_tag_names, autocomplete_options("tag") %>
+        <%= f.text_field :other_bookmark_tag_names, autocomplete_options("tags") %>
       </dd>
       <dt>
         <%= f.label :bookmarker, ts("Bookmarker") %>

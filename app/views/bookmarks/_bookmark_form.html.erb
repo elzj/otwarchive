@@ -79,7 +79,7 @@
                 <%= ts("The creator's tags are added automatically.") %>
               </p>
             <% end %>
-            <%= f.text_field :tag_string, autocomplete_options('tag?type=all', size: (in_page ? 60 : 80), "aria-describedby" => "tag-string-description") %>
+            <%= f.text_field :tag_string, autocomplete_options('tags?type=all', size: (in_page ? 60 : 80), "aria-describedby" => "tag-string-description") %>
             <p class="character_counter">
               <%= ts("Comma separated, %{max} characters per tag", max: ArchiveConfig.TAG_MAX) %>
             </p>
@@ -87,7 +87,7 @@
 
           <dt><%= f.label :collection_names, ts("Add to collections") %></dt>
           <dd>
-            <%= f.text_field :collection_names, autocomplete_options('open_collection_names', size: (in_page ? 60 : 80)) %>
+            <%= f.text_field :collection_names, autocomplete_options('collections/open', size: (in_page ? 60 : 80)) %>
           </dd>
         </dl>
       </fieldset>

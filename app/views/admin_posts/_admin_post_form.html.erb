@@ -33,7 +33,7 @@
       <dl>
         <dt><%= f.label :tag_list, t(".tags.label") %></dt>
         <dd>
-          <%= f.text_field :tag_list, autocomplete_options('admin_post_tags') %>
+          <%= f.text_field :tag_list, autocomplete_options('admin_posts/tags') %>
           <p class="character_counter">
             <%= ts("Comma separated, %{max} characters per tag", :max => ArchiveConfig.TAG_MAX) %>
           </p>

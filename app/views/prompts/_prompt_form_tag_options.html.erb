@@ -50,7 +50,7 @@
 
       <% elsif TagSet::TAG_TYPES_RESTRICTED_TO_FANDOM.include?(tag_type) && (restriction.restricted?(tag_type, "fandom") || restriction.restricted?(tag_type, "tag_set")) %>
         <% # characters or relationships restricted to fandom: use an autocomplete and either do/don't include wrangled tags %>
-        <% autocomplete_method = "associated_tags?fallback=false&tag_type=#{tag_type}&tag_set=#{restriction.tag_set_ids.join(',')}" %>
+        <% autocomplete_method = "tags/associated?fallback=false&tag_type=#{tag_type}&tag_set=#{restriction.tag_set_ids.join(',')}" %>
         <% autocomplete_method += "&include_wrangled=false" if restriction.restricted?(tag_type, "tag_set") %>
         <dd title="<%= ts("choose #{tag_name.pluralize.downcase} from your selected fandoms") %>">
           <%= tag_set_form.text_field "#{tag_type}_tagnames",
@@ -84,7 +84,7 @@
           <% else # we have set options but too many for tickyboxes, do autocomplete instead %>
             <dd title="<%= ts("choose #{tag_name.pluralize.downcase} from the challenge options") %>">
               <%= tag_set_form.text_field "#{tag_type}_tagnames",
-                  autocomplete_options("tags_in_sets?tag_type=#{tag_type}&tag_set=#{restriction.tag_set_ids.join(',')}",
+                  autocomplete_options("tags/in_sets?tag_type=#{tag_type}&tag_set=#{restriction.tag_set_ids.join(',')}",
                     data: { autocomplete_token_limit: num_allowed }) %>
               <p class="actions" role="button">
                 <% # TODO: would be nice to improve this for the case of multiple tag sets, currently it links to just an index of all the tag sets for this challenge %>

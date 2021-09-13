@@ -78,7 +78,7 @@
         <%= link_to_help "add-collectible-to-collection" %>
       </dt>
       <dd class="collection" title="<%= ts("post to collection or challenge") %>">
-        <%= f.text_field :collection_names, autocomplete_options("open_collection_names") %>
+        <%= f.text_field :collection_names, autocomplete_options("collections/open") %>
       </dd>
 
       <dt class="recipient" title="<%= ts("gift to") %>">
@@ -86,7 +86,7 @@
         <%= link_to_help "recipients" %>
       </dt>
       <dd class="recipient" title="<%= ts("gift to") %>">
-        <%= f.text_field :recipients, autocomplete_options("pseud", value: @work.recipients(for_form = true)) %>
+        <%= f.text_field :recipients, autocomplete_options("pseuds", value: @work.recipients(for_form = true)) %>
       </dd>
 
       <!-- Inspiration / remix -->

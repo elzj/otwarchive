@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Autocomplete::BaseController < ApplicationController
   respond_to :json
 

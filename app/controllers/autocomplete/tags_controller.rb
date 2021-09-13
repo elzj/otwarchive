@@ -2,7 +2,6 @@
 
 class Autocomplete::TagsController < Autocomplete::BaseController
 
-  # these are all basically duplicates but make our calls to autocomplete more readable
   def index
     tag_output(params[:term], params[:type] || "all")
   end

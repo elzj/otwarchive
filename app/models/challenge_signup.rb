@@ -150,6 +150,7 @@ class ChallengeSignup < ApplicationRecord
   # sort alphabetically
   include Comparable
   def <=>(other)
+    return unless other.respond_to?(:pseud)
     self.pseud.name.downcase <=> other.pseud.name.downcase
   end
 

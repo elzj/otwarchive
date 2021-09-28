@@ -15,7 +15,7 @@ class UrlFormatter
   end
   
   # Remove anchors and query parameters, preserve sid parameter for eFiction sites
-  def minimal (input = url)
+  def minimal(input = url)
     uri = Addressable::URI.parse(input)
     queries = CGI::parse(uri.query) unless uri.query.nil?
     if queries.nil?
@@ -40,11 +40,11 @@ class UrlFormatter
   end
   
   def encoded
-    minimal URI.encode(url)
+    minimal URI::Parser.new.escape(url)
   end
   
   def decoded
-    URI.decode(minimal)
+    URI::Parser.new.unescape(minimal)
   end
   
   # Adds http if not present and downcases the host
@@ -55,5 +55,4 @@ class UrlFormatter
     clean_url.host.downcase!
     clean_url.to_s
   end
-  
 end

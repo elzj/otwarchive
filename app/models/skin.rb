@@ -110,8 +110,12 @@ class Skin < ApplicationRecord
     errors.add(:base, ts("You need to upload a screencap if you want to share your skin."))
   end
 
-  validates_presence_of :title
-  validates_uniqueness_of :title, message: ts('must be unique')
+  validates :title,
+    presence: true,
+    uniqueness: {
+      case_sensitive: false,
+      message: ts('must be unique')
+    }
 
   validates_numericality_of :margin, :base_em, allow_nil: true
   validate :valid_font

@@ -74,7 +74,7 @@
   <dd class="byline coauthors">
     <%= check_box_tag "co-authors-options-show", "1", object.creatorships.any?(&:ambiguous?), class: "toggle_formfield" %>
     <fieldset id="co-authors-options" title="<%= ts("Add co-creators") %>">
-      <%= creator_form.text_field :byline, autocomplete_options("pseud", size: 50).merge(id: "pseud_byline") %>
+      <%= creator_form.text_field :byline, autocomplete_options("pseuds", size: 50).merge(id: "pseud_byline") %>
       <% object.creatorships.each do |creatorship| %>
         <% next unless creatorship.ambiguous? %>
         <% name = creatorship.byline %>

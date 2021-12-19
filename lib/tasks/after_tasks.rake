@@ -344,7 +344,7 @@ namespace :After do
 #     puts collection_item.id
 #     work = collection_item.item
 #     if work.present?
-#       work.update_attributes(
+#       work.update(
 #         in_anon_collection: collection_item.anonymous,
 #         in_unrevealed_collection: collection_item.unrevealed
 #       )

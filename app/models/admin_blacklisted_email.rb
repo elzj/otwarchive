@@ -3,7 +3,10 @@ class AdminBlacklistedEmail < ApplicationRecord
 
   before_validation :canonicalize_email
 
-  validates :email, presence: true, uniqueness: true, email_veracity: true
+  validates :email,
+    presence: true,
+    uniqueness: { case_sensitive: false },
+    email_veracity: true
 
   def canonicalize_email
     self.email = AdminBlacklistedEmail.canonical_email(self.email) if self.email

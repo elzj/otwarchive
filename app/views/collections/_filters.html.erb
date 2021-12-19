@@ -33,7 +33,7 @@
       <dd class="autocomplete search">
         <%= text_field_tag "collection_filters[title]",
             params[:collection_filters][:title],
-            autocomplete_options("collection_fullname",
+            autocomplete_options("collections",
               data: { autocomplete_token_limit: 1 }) %>
       </dd>
       <dt class="autocomplete search">

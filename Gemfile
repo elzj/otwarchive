@@ -6,7 +6,7 @@ gem 'test-unit', '~> 3.2'
 
 gem 'bundler'
 
-gem "rails", "~> 5.2"
+gem "rails", "~> 6.1.4"
 gem "rack", "~> 2.1", ">= 2.1.4"
 gem "sprockets", "< 4"
 
@@ -24,7 +24,7 @@ gem 'mysql2', '0.5.2'
 gem 'transaction_isolation', '1.0.5'
 gem 'transaction_retry'
 #https://github.com/winebarrel/activerecord-mysql-reconnect
-gem 'activerecord-mysql-reconnect', '~> 0.4.1'
+gem 'activerecord-mysql-reconnect', '~> 0.5.0'
 
 gem 'rack-attack'
 
@@ -50,13 +50,9 @@ gem 'akismetor'
 gem 'httparty'
 gem 'htmlentities'
 gem 'whenever', '~>0.6.2', require: false
-gem 'nokogiri', '>= 1.8.5'
+gem 'nokogiri', '~> 1.12.0'
 gem 'mechanize'
-gem 'sanitize', '>= 4.6.5'
-# Until there is a working solution to
-# https://otwarchive.atlassian.net/browse/AO3-4957
-# https://github.com/rubys/nokogumbo/issues/50
-gem 'nokogumbo', '1.4.9'
+gem 'sanitize', '~>6.0.0'
 gem "rest-client", "~> 2.1.0", require: "rest_client"
 gem 'resque', '>=1.14.0'
 gem 'resque-scheduler'
@@ -114,7 +110,7 @@ gem 'phraseapp-in-context-editor-ruby', '>=1.0.6'
 
 # For URL mangling
 gem 'addressable'
-gem 'audited', '~> 4.4'
+gem "audited", "~> 5.0"
 
 # For controlling application behavour dynamically
 gem 'rollout'
@@ -129,8 +125,7 @@ gem 'dalli'
 gem 'kgio', '2.10.0'
 
 group :test do
-  gem 'rspec', '~> 3.8'
-  gem 'rspec-rails', '~> 3.8.2'
+  gem 'rspec-rails', '~> 4.0.1'
   gem 'pickle'
   gem 'shoulda'
   gem 'capybara', '~> 2.16.1'
@@ -176,7 +171,7 @@ group :linters do
 end
 
 group :test, :development, :staging do
-  gem 'bullet', '>= 5.7.3'
+  gem 'bullet', '~> 6.1'
 end
 
 # Deploy with Capistrano

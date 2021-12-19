@@ -12,8 +12,11 @@ module Otwarchive
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
 
+    config.load_defaults "6.0"
+
     # Custom directories with classes and modules you want to be autoloadable.
     # config.autoload_paths += %W(#{config.root}/extras)
+    config.add_autoload_paths_to_load_path = false
     config.eager_load_paths += [Rails.root.join("lib")]
     config.autoload_paths += [Rails.root.join("app/sweepers")]
     %w[
@@ -27,13 +30,7 @@ module Otwarchive
       config.autoload_paths << Rails.root.join("app/models/#{dir}")
     end
 
-    # Only load the plugins named here, in the order given (default is alphabetical).
-    # :all can be used as a placeholder for all plugins not explicitly named.
-    # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
-    config.plugins = [:all]
-
     # I18n validation deprecation warning fix
-    #
 
     I18n.config.enforce_available_locales = false
     I18n.config.available_locales = [
@@ -68,10 +65,11 @@ module Otwarchive
     # Disable dumping schemas after migrations.
     config.active_record.dump_schema_after_migration = false
 
-    # Use SQL instead of Active Record's schema dumper when creating the test database.
-    # This is necessary if your schema can't be completely dumped by the schema dumper,
-    # like if you have constraints or database-specific column types
-    config.active_record.schema_format = :sql
+    # Allows belongs_to associations to be optional
+    config.active_record.belongs_to_required_by_default = false
+
+    # Keeps updated_at in cache keys
+    config.active_record.cache_versioning = false
 
     # handle errors with custom error pages:
     config.exceptions_app = self.routes

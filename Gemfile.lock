@@ -448,6 +448,8 @@ GEM
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
+    prism (2.1.0)
+    prism (2.1.0-arm64-darwin)
     pry (0.15.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -678,6 +680,10 @@ GEM
     useragent (0.16.11)
     vcr (6.3.1)
       base64
+    view_component (4.24.0)
+      actionview (>= 7.1.0)
+      activesupport (>= 7.1.0)
+      prism (>= 1.0)
     warden (1.2.9)
       rack (>= 2.0.9)
     webmock (3.25.1)
@@ -703,6 +709,7 @@ GEM
     zeitwerk (2.7.3)
 
 PLATFORMS
+  arm64-darwin-27
   ruby
 
 DEPENDENCIES
@@ -807,6 +814,7 @@ DEPENDENCIES
   unicorn (~> 5.5)
   unidecoder
   vcr (~> 6.2)
+  view_component
   webmock
   whenever (~> 0.6.2)
   whiny_validation

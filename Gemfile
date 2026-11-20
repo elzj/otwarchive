@@ -81,6 +81,7 @@ gem 'escape_utils', '1.2.1'
 
 gem 'timeliness'
 gem "tzinfo-data"
+gem "view_component"
 
 # for generating graphs
 gem 'google_visualr', git: 'https://github.com/winston/google_visualr'

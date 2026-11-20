@@ -1,0 +1,10 @@
+<% if @time.blank? -%>
+<%= ts("(no time specified)") -%>
+<% else -%>
+<abbr class="day" title="<%= @time.day -%>"><%= @time.short_day -%></abbr>
+<%= " #{@time.date} " -%>
+<abbr class="month" title="<%= @time.month -%>"><%= @time.short_month -%></abbr>
+<%= " #{@time.year} #{@time.time} #{@time.zone}" -%>
+
+<% if @user_time.present? -%><%= "(#{@user_time})" -%><% end -%>
+<% end -%>

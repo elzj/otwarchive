@@ -9,13 +9,16 @@ require "database_cleaner"
 require "email_spec"
 require "webmock/rspec"
 require "n_plus_one_control/rspec"
+require "view_component/test_helpers"
+require "view_component/system_test_helpers"
+require "capybara/rspec"
 
 DatabaseCleaner.start
 DatabaseCleaner.clean
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
-Dir[Rails.root.join("spec/support/**/*.rb")].sort.each { |f| require f }
+Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
 RSpec.configure do |config|
   config.mock_with :rspec
@@ -31,6 +34,9 @@ RSpec.configure do |config|
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include Devise::Test::IntegrationHelpers, type: :request
   config.include TaskExampleGroup, type: :task
+  config.include ViewComponent::TestHelpers, type: :component
+  config.include ViewComponent::SystemTestHelpers, type: :component
+  config.include Capybara::RSpecMatchers, type: :component
 
   config.before :suite do
     Rails.application.load_tasks
